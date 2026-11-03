@@ -22,6 +22,27 @@
   <body>
     <div class="site-shell">
       <header class="header" data-testid="site-header">
+        <!-- BCoding Announcement Banner -->
+<div class="announcement-banner" id="announcementBanner" hidden>
+    <div class="announcement-inner">
+        <span class="announcement-indicator"></span>
+
+        <span class="announcement-label">SERVICE NOTICE</span>
+
+        <span class="announcement-message">
+            Our blog website is currently offline due to a hardware failure.
+            We apologise for the inconvenience.
+        </span>
+    </div>
+</div>
+
+<script>
+    // ANNOUNCEMENT SETTINGS
+    const SHOW_ANNOUNCEMENT = true; // true = ON | false = OFF
+
+    document.getElementById("announcementBanner").hidden =
+        !SHOW_ANNOUNCEMENT;
+</script>
         <nav class="nav" aria-label="Main navigation">
           <a class="brand" href="#home" aria-label="BCoding home" data-testid="link-home">
             <img src="bcoding-logo.png" alt="BCoding" width="1024" height="683" />
@@ -47,57 +68,6 @@
           </a>
         </nav>
       </header>
-    <!-- BCoding Announcement Banner -->
-<script>
-    const SHOW_ANNOUNCEMENT = true; // Change to false to hide
-
-    if (SHOW_ANNOUNCEMENT) {
-        document.write(`
-            <div class="announcement-banner">
-                <span class="announcement-icon">⚠️</span>
-                <span>
-                    <strong>Service Announcement:</strong>
-                    Blog website currently offline due to hardware failure.
-                    We apologise for the inconvenience.
-                </span>
-            </div>
-        `);
-    }
-</script>
-
-<style>
-    .announcement-banner {
-        width: 100%;
-        box-sizing: border-box;
-        background: #332713;
-        border-bottom: 1px solid #a87924;
-        color: #ffe0a3;
-        padding: 13px 20px;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        line-height: 1.6;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .announcement-banner strong {
-        color: #ffffff;
-    }
-
-    .announcement-icon {
-        font-size: 18px;
-    }
-
-    @media (max-width: 600px) {
-        .announcement-banner {
-            font-size: 12px;
-            padding: 12px;
-        }
-    }
-</style>
       <main>
         <section class="hero" id="home" aria-labelledby="hero-title" data-testid="section-hero">
           <div class="hero-grid" aria-hidden="true"></div>
