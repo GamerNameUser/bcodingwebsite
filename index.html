@@ -20,6 +20,33 @@
     <link rel="stylesheet" href="src/index.css" />
   </head>
   <body>
+    <div class="site-shell">
+      <header class="header" data-testid="site-header">
+        <nav class="nav" aria-label="Main navigation">
+          <a class="brand" href="#home" aria-label="BCoding home" data-testid="link-home">
+            <img src="bcoding-logo.png" alt="BCoding" width="1024" height="683" />
+          </a>
+          <div class="nav-links desktop-nav-links">
+            <a href="#services" data-testid="link-nav-services">What we do</a>
+            <a href="#approach" data-testid="link-nav-approach">How we work</a>
+            <a href="#games" data-testid="link-nav-games">BCoding Games</a>
+          </div>
+          <details class="mobile-menu">
+            <summary class="menu-toggle" aria-label="Toggle navigation menu">
+              <span class="menu-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="nav-links">
+              <a href="#services" data-testid="link-mobile-services">What we do</a>
+              <a href="#approach" data-testid="link-mobile-approach">How we work</a>
+              <a href="#games" data-testid="link-mobile-games">BCoding Games</a>
+              <a href="#contact" data-testid="link-mobile-contact">Contact</a>
+            </div>
+          </details>
+          <a class="nav-contact" href="mailto:brendon@bcoding.co.za" data-testid="link-nav-contact">
+            Start a conversation <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+        </nav>
+      </header>
     <!-- BCoding Announcement Banner -->
 <script>
     const SHOW_ANNOUNCEMENT = true; // Change to false to hide
@@ -71,34 +98,6 @@
         }
     }
 </style>
-    <div class="site-shell">
-      <header class="header" data-testid="site-header">
-        <nav class="nav" aria-label="Main navigation">
-          <a class="brand" href="#home" aria-label="BCoding home" data-testid="link-home">
-            <img src="bcoding-logo.png" alt="BCoding" width="1024" height="683" />
-          </a>
-          <div class="nav-links desktop-nav-links">
-            <a href="#services" data-testid="link-nav-services">What we do</a>
-            <a href="#approach" data-testid="link-nav-approach">How we work</a>
-            <a href="#games" data-testid="link-nav-games">BCoding Games</a>
-          </div>
-          <details class="mobile-menu">
-            <summary class="menu-toggle" aria-label="Toggle navigation menu">
-              <span class="menu-icon" aria-hidden="true"></span>
-            </summary>
-            <div class="nav-links">
-              <a href="#services" data-testid="link-mobile-services">What we do</a>
-              <a href="#approach" data-testid="link-mobile-approach">How we work</a>
-              <a href="#games" data-testid="link-mobile-games">BCoding Games</a>
-              <a href="#contact" data-testid="link-mobile-contact">Contact</a>
-            </div>
-          </details>
-          <a class="nav-contact" href="mailto:brendon@bcoding.co.za" data-testid="link-nav-contact">
-            Start a conversation <span class="arrow" aria-hidden="true">↗</span>
-          </a>
-        </nav>
-      </header>
-
       <main>
         <section class="hero" id="home" aria-labelledby="hero-title" data-testid="section-hero">
           <div class="hero-grid" aria-hidden="true"></div>
