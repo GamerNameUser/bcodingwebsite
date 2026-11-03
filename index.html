@@ -20,6 +20,57 @@
     <link rel="stylesheet" href="src/index.css" />
   </head>
   <body>
+    <!-- BCoding Announcement Banner -->
+<script>
+    const SHOW_ANNOUNCEMENT = true; // Change to false to hide
+
+    if (SHOW_ANNOUNCEMENT) {
+        document.write(`
+            <div class="announcement-banner">
+                <span class="announcement-icon">⚠️</span>
+                <span>
+                    <strong>Service Announcement:</strong>
+                    Blog website currently offline due to hardware failure.
+                    We apologise for the inconvenience.
+                </span>
+            </div>
+        `);
+    }
+</script>
+
+<style>
+    .announcement-banner {
+        width: 100%;
+        box-sizing: border-box;
+        background: #332713;
+        border-bottom: 1px solid #a87924;
+        color: #ffe0a3;
+        padding: 13px 20px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .announcement-banner strong {
+        color: #ffffff;
+    }
+
+    .announcement-icon {
+        font-size: 18px;
+    }
+
+    @media (max-width: 600px) {
+        .announcement-banner {
+            font-size: 12px;
+            padding: 12px;
+        }
+    }
+</style>
     <div class="site-shell">
       <header class="header" data-testid="site-header">
         <nav class="nav" aria-label="Main navigation">
