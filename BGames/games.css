@@ -1,0 +1,200 @@
+.games-container10.games-container10 {
+  width: 100%;
+  min-height: 100vh;
+}
+ 
+.games-thq-steam-games-showcase-label-elm.games-thq-steam-games-showcase-label-elm {
+  font-size: 48px;
+}
+ 
+.games-thq-steam-games-showcase-notice-elm.games-thq-steam-games-showcase-notice-elm {
+  border: 2px dashed rgba(120, 120, 120, 0.4);
+}
+ 
+.games-thq-steam-slot-tag-elm10.games-thq-steam-slot-tag-elm10 {
+  font-size: 16px;
+  text-align: center;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-embed-zone-elm10.games-thq-steam-slot-embed-zone-elm10 {
+  align-items: center;
+  justify-content: center;
+}
+ 
+.games-container11.games-container11 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container12.games-container12 {
+  display: contents;
+}
+ 
+.games-thq-btn-elm11.games-thq-btn-elm11 {
+  text-decoration: none;
+}
+ 
+.games-thq-steam-slot-tag-elm11.games-thq-steam-slot-tag-elm11 {
+  font-size: 16px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-embed-zone-elm11.games-thq-steam-slot-embed-zone-elm11 {
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.games-container13.games-container13 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container14.games-container14 {
+  display: contents;
+}
+ 
+.games-thq-btn-elm12.games-thq-btn-elm12 {
+  text-decoration: none;
+}
+ 
+.games-thq-steam-slot-tag-elm12.games-thq-steam-slot-tag-elm12 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-container15.games-container15 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container16.games-container16 {
+  display: contents;
+}
+ 
+.games-thq-btn-elm13.games-thq-btn-elm13 {
+  text-decoration: none;
+}
+ 
+.games-thq-steam-slot-tag-elm13.games-thq-steam-slot-tag-elm13 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-container17.games-container17 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container18.games-container18 {
+  display: contents;
+}
+ 
+.games-thq-btn-elm14.games-thq-btn-elm14 {
+  text-decoration: none;
+}
+ 
+.games-thq-steam-slot-tag-elm14.games-thq-steam-slot-tag-elm14 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-container19.games-container19 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container20.games-container20 {
+  display: contents;
+}
+ 
+.games-thq-btn-elm15.games-thq-btn-elm15 {
+  text-decoration: none;
+}
+ 
+.games-thq-steam-slot-tag-elm15.games-thq-steam-slot-tag-elm15 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-container21.games-container21 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container22.games-container22 {
+  display: contents;
+}
+ 
+.games-thq-btn-elm16.games-thq-btn-elm16 {
+  text-decoration: none;
+}
+ 
+.games-thq-steam-slot-tag-elm16.games-thq-steam-slot-tag-elm16 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm17.games-thq-steam-slot-tag-elm17 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm18.games-thq-steam-slot-tag-elm18 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm19.games-thq-steam-slot-tag-elm19 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-game-updates-cta-elm.games-thq-game-updates-cta-elm {
+  min-height: 220px;
+}
+ 
+.games-thq-game-updates-cta-accent-elm.games-thq-game-updates-cta-accent-elm {
+  color: var(--blue-bright);
+}
+ 
+.games-container23.games-container23 {
+  display: none;
+}
+ 
+.games-container24.games-container24 {
+  display: contents;
+}
+ 
+.games-container25.games-container25 {
+  right: 50px;
+  border: 1px solid #ffffff5c;
+  bottom: 30px;
+  display: flex;
+  z-index: 22;
+  position: fixed;
+  box-shadow: 5px 5px 10px 0px rgba(31, 31, 31, 0.4);
+  min-height: auto;
+  align-items: center;
+  padding-top: 8px;
+  padding-left: 12px;
+  border-radius: 8px;
+  padding-right: 12px;
+  padding-bottom: 8px;
+  backdrop-filter: blur(6px);
+  background-color: rgba(41, 41, 41, 0.41);
+}
+ 
+.games-icon50.games-icon50 {
+  width: 24px;
+  margin-right: 4px;
+}
+ 
+.games-text26.games-text26 {
+  color: white;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+}
