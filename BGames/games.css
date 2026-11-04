@@ -3,6 +3,10 @@
   min-height: 100vh;
 }
  
+.games-thq-bcoding-header-eyebrow-elm.games-thq-bcoding-header-eyebrow-elm {
+  border: 2px dashed rgba(120, 120, 120, 0.4);
+}
+ 
 .games-thq-steam-games-showcase-label-elm.games-thq-steam-games-showcase-label-elm {
   font-size: 48px;
 }
@@ -151,12 +155,54 @@
   font-weight: 700;
 }
  
-.games-thq-game-updates-cta-elm.games-thq-game-updates-cta-elm {
-  min-height: 220px;
+.games-thq-steam-slot-tag-elm20.games-thq-steam-slot-tag-elm20 {
+  font-size: 18px;
+  font-weight: 700;
 }
  
-.games-thq-game-updates-cta-accent-elm.games-thq-game-updates-cta-accent-elm {
-  color: var(--blue-bright);
+.games-thq-steam-slot-tag-elm21.games-thq-steam-slot-tag-elm21 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm22.games-thq-steam-slot-tag-elm22 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm23.games-thq-steam-slot-tag-elm23 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm24.games-thq-steam-slot-tag-elm24 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm25.games-thq-steam-slot-tag-elm25 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm26.games-thq-steam-slot-tag-elm26 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm27.games-thq-steam-slot-tag-elm27 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm28.games-thq-steam-slot-tag-elm28 {
+  font-size: 18px;
+  font-weight: 700;
+}
+ 
+.games-thq-steam-slot-tag-elm29.games-thq-steam-slot-tag-elm29 {
+  font-size: 18px;
+  font-weight: 700;
 }
  
 .games-container23.games-container23 {
@@ -186,12 +232,12 @@
   background-color: rgba(41, 41, 41, 0.41);
 }
  
-.games-icon50.games-icon50 {
+.games-icon88.games-icon88 {
   width: 24px;
   margin-right: 4px;
 }
  
-.games-text26.games-text26 {
+.games-text31.games-text31 {
   color: white;
   font-size: 13px;
   font-style: normal;
