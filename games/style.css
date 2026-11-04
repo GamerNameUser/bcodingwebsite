@@ -1193,14 +1193,6 @@
   letter-spacing: 0.05em;
 }
  
-.steam-slot-embed-placeholder {
-  gap: 0.625rem;
-  display: flex;
-  text-align: center;
-  align-items: center;
-  flex-direction: column;
-}
- 
 .steam-slot-download-btn {
   gap: 0.5rem;
   color: var(--ice);
@@ -1217,18 +1209,6 @@
   justify-content: center;
   text-decoration: none;
   background-color: var(--blue);
-}
- 
-.steam-slot-icon {
-  color: var(--blue-bright);
-  opacity: 0.85;
-}
- 
-.steam-slot-placeholder-title {
-  color: var(--ice);
-  font-size: 0.9375rem;
-  font-family: var(--app-font-sans);
-  font-weight: 700;
 }
  
 .steam-slot-btn-icon {
