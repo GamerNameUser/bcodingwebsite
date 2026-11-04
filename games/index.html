@@ -2,17 +2,16 @@
 <html lang="en">
   <head>
     <title>BGames - Pirated Games</title>
-    <meta property="og:title" content="BGames - Pirated Games" />
+    <meta property="og:title" content="Games -  Pirated Games" />
     <meta property="og:type" content="website" />
-    <meta name="twitter:title" content="BGames - Pirated Games" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="twitter:title" content="Games -  Pirated Games" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
-    
     <meta property="twitter:card" content="summary_large_image" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style data-tag="reset-style-sheet">
       html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;  -webkit-font-smoothing: antialiased;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;  color: inherit;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}pre {  white-space: normal;}input {  padding: 2px 4px;}img {  display: block;}details {  display: block;  margin: 0;  padding: 0;}summary::-webkit-details-marker {  display: none;}[data-thq="accordion"] [data-thq="accordion-content"] {  max-height: 0;  overflow: hidden;  transition: max-height 0.3s ease-in-out;  padding: 0;}[data-thq="accordion"] details[data-thq="accordion-trigger"][open] + [data-thq="accordion-content"] {  max-height: 1000vh;}details[data-thq="accordion-trigger"][open] summary [data-thq="accordion-icon"] {  transform: rotate(180deg);}/* A link wrapped around a flex or grid item draws no box of its own, so it has   nothing to paint a focus ring on. The ring goes on the element it wraps. */a[data-thq-link-wrapper]:focus-visible > * {  outline: 2px solid Highlight;  outline: 5px auto -webkit-focus-ring-color;  outline-offset: 2px;}/* A box the canvas draws as a block can be written as its own link on the page,   and a link is laid out in line with text unless a rule says otherwise. Zero   weight: any rule of the page's own still decides. */:where(a[data-thq-link-box]) {  display: block;}html { scroll-behavior: smooth  }
     </style>
@@ -38,6 +37,12 @@
     <link
       rel="stylesheet"
       href="https://unpkg.com/animate.css@4.1.1/animate.css"
+    />
+    <link
+      rel="shortcut icon"
+      href="public/favicon1.svg"
+      type="image/svg+xml"
+      sizes="32x32"
     />
     <link
       rel="stylesheet"
@@ -208,29 +213,34 @@
           <div aria-hidden="true" class="bcoding-header-decor-grid"></div>
           <div aria-hidden="true" class="bcoding-header-glow"></div>
           <div class="bcoding-header-container">
-            <div class="bcoding-header-brand-row">
-              <div class="bcoding-header-brand">
-                <div class="bcoding-header-brand-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="m16 18l6-6l-6-6M8 6l-6 6l6 6"
-                    ></path>
-                  </svg>
+            <div class="games-container11">
+              <div class="bcoding-header-brand-row">
+                <div class="bcoding-header-brand">
+                  <div class="bcoding-header-brand-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m16 18l6-6l-6-6M8 6l-6 6l6 6"
+                      ></path>
+                    </svg>
+                  </div>
+                  <span class="bcoding-header-brand-name">BCODING</span>
                 </div>
-                <span class="bcoding-header-brand-name">BCODING</span>
+                <div
+                  aria-hidden="true"
+                  class="bcoding-header-line-element"
+                ></div>
               </div>
-              <div aria-hidden="true" class="bcoding-header-line-element"></div>
             </div>
             <div class="bcoding-header-content">
               <div
@@ -238,13 +248,15 @@
               ></div>
               <h1 class="bcoding-header-title">Pirated Games</h1>
               <p class="bcoding-header-desc">
-                Get Games for free. All games have been virus checked.
+                Get Games for free. All games have been virus checked. If we do
+                not have the game you want press the "Request A Game" Button to
+                email games@bcoding.co.za for a Request.
               </p>
               <div class="bcoding-header-actions">
                 <a
                   href="#steam-games-showcase"
                   data-thq-link-box="true"
-                  class="btn btn-primary bcoding-header-cta"
+                  class="games-thq-btn-elm10 btn btn-primary bcoding-header-cta"
                 >
                   <span>Jump to Games Grid</span>
                   <svg
@@ -264,8 +276,43 @@
                     ></path>
                   </svg>
                 </a>
+                <a
+                  href="mailto:games@bcoding.co.za?subject=Game Request"
+                  data-thq-link-box="true"
+                  class="games-thq-btn-elm11 btn btn-primary bcoding-header-cta"
+                >
+                  <span>Request A Game</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 12h14m-7-7l7 7l-7 7"
+                    ></path>
+                  </svg>
+                </a>
               </div>
             </div>
+            <qrcode-node
+              value="mailto:games@bcoding.co.za?subject=Game Request"
+              size="100"
+              foreground="#FFFFFF"
+              background="#080F1D"
+              margin="4"
+              level="M"
+              rendertype="canvas"
+              logourl=""
+              logosize="40"
+              class="games-qrcode-node"
+            ></qrcode-node>
           </div>
         </section>
         <section id="steam-games-showcase" class="steam-games-showcase">
@@ -292,8 +339,8 @@
                 <div
                   class="games-thq-steam-slot-embed-zone-elm10 steam-slot-embed-zone"
                 >
-                  <div class="games-container11">
-                    <div class="games-container12">
+                  <div class="games-container12">
+                    <div class="games-container13">
                       <iframe
                         src="https://store.steampowered.com/widget/4813880/"
                         frameborder="0"
@@ -305,11 +352,11 @@
                 </div>
                 <div class="steam-slot-footer">
                   <a
-                    href="https://bcoding.co.za/games/download/Uptime-Cloud-Provider-Sim-BCoding.co.za.rar"
+                    href="https://www.mediafire.com/file/yfm5tvsuwfqict0/Uptime-Cloud-Provider-Sim-BCoding.co.za.rar/file"
                     target="_blank"
                     rel="noreferrer noopener"
                     data-thq-link-box="true"
-                    class="games-thq-btn-elm11 btn btn-primary steam-slot-download-btn"
+                    class="games-thq-btn-elm12 btn btn-primary steam-slot-download-btn"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -345,8 +392,8 @@
                 <div
                   class="games-thq-steam-slot-embed-zone-elm11 steam-slot-embed-zone"
                 >
-                  <div class="games-container13">
-                    <div class="games-container14">
+                  <div class="games-container14">
+                    <div class="games-container15">
                       <iframe
                         src="https://store.steampowered.com/widget/4170200/"
                         frameborder="0"
@@ -358,11 +405,11 @@
                 </div>
                 <div class="steam-slot-footer">
                   <a
-                    href="https://bcoding.co.za/games/download/Data-Center-BCoding.co.za.rar"
+                    href="https://www.mediafire.com/file/r8zhixlv7zwz0qp/Data-Center-BCoding.co.za.rar/file"
                     target="_blank"
                     rel="noreferrer noopener"
                     data-thq-link-box="true"
-                    class="games-thq-btn-elm12 btn btn-primary steam-slot-download-btn"
+                    class="games-thq-btn-elm13 btn btn-primary steam-slot-download-btn"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -396,8 +443,8 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="games-container15">
-                    <div class="games-container16">
+                  <div class="games-container16">
+                    <div class="games-container17">
                       <iframe
                         src="https://store.steampowered.com/widget/5335510/"
                         frameborder="0"
@@ -409,11 +456,11 @@
                 </div>
                 <div class="steam-slot-footer">
                   <a
-                    href="https://bcoding.co.za/games/download/Moon-Sweepers-BCoding.co.za.rar"
+                    href="https://www.mediafire.com/file/ve80i68ajon24u6/Moon-Sweepers-BCoding.co.za.rar/file"
                     target="_blank"
                     rel="noreferrer noopener"
                     data-thq-link-box="true"
-                    class="games-thq-btn-elm13 btn btn-primary steam-slot-download-btn"
+                    class="games-thq-btn-elm14 btn btn-primary steam-slot-download-btn"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -447,8 +494,8 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="games-container17">
-                    <div class="games-container18">
+                  <div class="games-container18">
+                    <div class="games-container19">
                       <iframe
                         src="https://store.steampowered.com/widget/5258340/"
                         frameborder="0"
@@ -460,11 +507,11 @@
                 </div>
                 <div class="steam-slot-footer">
                   <a
-                    href="https://bcoding.co.za/games/download/One-Million-Coins-BCoding.co.za.rar"
+                    href="https://www.mediafire.com/file/yni31jlj2s3se0w/One-Million-Coins-BCoding.co.za.rar/file"
                     target="_blank"
                     rel="noreferrer noopener"
                     data-thq-link-box="true"
-                    class="games-thq-btn-elm14 btn btn-primary steam-slot-download-btn"
+                    class="games-thq-btn-elm15 btn btn-primary steam-slot-download-btn"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -498,8 +545,8 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="games-container19">
-                    <div class="games-container20">
+                  <div class="games-container20">
+                    <div class="games-container21">
                       <iframe
                         src="https://store.steampowered.com/widget/4312190/"
                         frameborder="0"
@@ -511,11 +558,11 @@
                 </div>
                 <div class="steam-slot-footer">
                   <a
-                    href="https://bcoding.co.za/games/download/Crack-BCoding.co.za.rar"
+                    href="https://www.mediafire.com/file/wxqsshl7udg742c/Crack-BCoding.co.za.rar/file"
                     target="_blank"
                     rel="noreferrer noopener"
                     data-thq-link-box="true"
-                    class="games-thq-btn-elm15 btn btn-primary steam-slot-download-btn"
+                    class="games-thq-btn-elm16 btn btn-primary steam-slot-download-btn"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -549,8 +596,8 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="games-container21">
-                    <div class="games-container22">
+                  <div class="games-container22">
+                    <div class="games-container23">
                       <iframe
                         src="https://store.steampowered.com/widget/4736470/"
                         frameborder="0"
@@ -562,11 +609,11 @@
                 </div>
                 <div class="steam-slot-footer">
                   <a
-                    href="https://bcoding.co.za/games/download/Dead-Sector-BCoding.co.za.rar"
+                    href="https://www.mediafire.com/file/6lhudax9l7fu1it/Dead-Sector-BCoding.co.za.rar/file"
                     target="_blank"
                     rel="noreferrer noopener"
                     data-thq-link-box="true"
-                    class="games-thq-btn-elm16 btn btn-primary steam-slot-download-btn"
+                    class="games-thq-btn-elm17 btn btn-primary steam-slot-download-btn"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -596,31 +643,19 @@
               <article class="steam-slot-card">
                 <div class="steam-slot-header">
                   <span class="games-thq-steam-slot-tag-elm16 steam-slot-tag">
-                    COMING SOON
+                    Empty The Lake
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container24">
+                    <div class="games-container25">
+                      <iframe
+                        src="https://store.steampowered.com/widget/5291460/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -661,27 +696,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container26">
+                    <div class="games-container27">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -722,27 +745,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container28">
+                    <div class="games-container29">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -783,27 +794,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container30">
+                    <div class="games-container31">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -844,27 +843,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container32">
+                    <div class="games-container33">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -905,27 +892,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container34">
+                    <div class="games-container35">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -966,27 +941,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container36">
+                    <div class="games-container37">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -1027,27 +990,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container38">
+                    <div class="games-container39">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -1088,27 +1039,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container40">
+                    <div class="games-container41">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -1149,27 +1088,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container42">
+                    <div class="games-container43">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -1210,27 +1137,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container44">
+                    <div class="games-container45">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -1271,27 +1186,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container46">
+                    <div class="games-container47">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -1332,27 +1235,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container48">
+                    <div class="games-container49">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -1393,27 +1284,15 @@
                   </span>
                 </div>
                 <div class="steam-slot-embed-zone">
-                  <div class="steam-slot-embed-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      class="steam-slot-icon"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"
-                      ></path>
-                    </svg>
-                    <span class="steam-slot-placeholder-title">
-                      Coming Soon
-                    </span>
+                  <div class="games-container50">
+                    <div class="games-container51">
+                      <iframe
+                        src="https://store.steampowered.com/widget/00000/"
+                        frameborder="0"
+                        width="460"
+                        height="350"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
                 <div class="steam-slot-footer">
@@ -1450,8 +1329,8 @@
             </div>
           </div>
         </section>
-        <div class="games-container23">
-          <div class="games-container24">
+        <div class="games-container52">
+          <div class="games-container53">
             <style>
               :where(h1, h2, h3, h4, h5, h6) {
                 overflow-wrap: break-word;
@@ -1460,14 +1339,14 @@
           </div>
         </div>
         <a href="https://play.teleporthq.io/signup">
-          <div aria-label="Sign up to TeleportHQ" class="games-container25">
+          <div aria-label="Sign up to TeleportHQ" class="games-container54">
             <svg
               width="24"
               height="24"
               viewBox="0 0 19 21"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              class="games-icon88"
+              class="games-icon76"
             >
               <path
                 d="M9.1017 4.64355H2.17867C0.711684 4.64355 -0.477539 5.79975 -0.477539 7.22599V13.9567C-0.477539 15.3829 0.711684 16.5391 2.17867 16.5391H9.1017C10.5687 16.5391 11.7579 15.3829 11.7579 13.9567V7.22599C11.7579 5.79975 10.5687 4.64355 9.1017 4.64355Z"
@@ -1482,7 +1361,7 @@
                 fill="#2874DE"
               ></path>
             </svg>
-            <span class="games-text31">Built in TeleportHQ</span>
+            <span class="games-text32">Built in TeleportHQ</span>
           </div>
         </a>
       </div>
