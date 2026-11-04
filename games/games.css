@@ -3,8 +3,35 @@
   min-height: 100vh;
 }
  
+.games-container11.games-container11 {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+ 
 .games-thq-bcoding-header-eyebrow-elm.games-thq-bcoding-header-eyebrow-elm {
   border: 2px dashed rgba(120, 120, 120, 0.4);
+}
+ 
+.games-thq-btn-elm10.games-thq-btn-elm10 {
+  width: 225px;
+  height: 50px;
+  border-width: 4px;
+}
+ 
+.games-thq-btn-elm11.games-thq-btn-elm11 {
+  width: 221px;
+  height: 49px;
+  border-color: #ffffff;
+  border-width: 4px;
+  text-decoration: none;
+}
+ 
+.games-qrcode-node.games-qrcode-node {
+  width: 95px;
+  height: 102px;
 }
  
 .games-thq-steam-games-showcase-label-elm.games-thq-steam-games-showcase-label-elm {
@@ -26,16 +53,16 @@
   justify-content: center;
 }
  
-.games-container11.games-container11 {
+.games-container12.games-container12 {
   width: 482px;
   height: 222px;
 }
  
-.games-container12.games-container12 {
+.games-container13.games-container13 {
   display: contents;
 }
  
-.games-thq-btn-elm11.games-thq-btn-elm11 {
+.games-thq-btn-elm12.games-thq-btn-elm12 {
   text-decoration: none;
 }
  
@@ -50,16 +77,16 @@
   justify-content: center;
 }
  
-.games-container13.games-container13 {
+.games-container14.games-container14 {
   width: 482px;
   height: 222px;
 }
  
-.games-container14.games-container14 {
+.games-container15.games-container15 {
   display: contents;
 }
  
-.games-thq-btn-elm12.games-thq-btn-elm12 {
+.games-thq-btn-elm13.games-thq-btn-elm13 {
   text-decoration: none;
 }
  
@@ -68,16 +95,16 @@
   font-weight: 700;
 }
  
-.games-container15.games-container15 {
+.games-container16.games-container16 {
   width: 482px;
   height: 222px;
 }
  
-.games-container16.games-container16 {
+.games-container17.games-container17 {
   display: contents;
 }
  
-.games-thq-btn-elm13.games-thq-btn-elm13 {
+.games-thq-btn-elm14.games-thq-btn-elm14 {
   text-decoration: none;
 }
  
@@ -86,16 +113,16 @@
   font-weight: 700;
 }
  
-.games-container17.games-container17 {
+.games-container18.games-container18 {
   width: 482px;
   height: 222px;
 }
  
-.games-container18.games-container18 {
+.games-container19.games-container19 {
   display: contents;
 }
  
-.games-thq-btn-elm14.games-thq-btn-elm14 {
+.games-thq-btn-elm15.games-thq-btn-elm15 {
   text-decoration: none;
 }
  
@@ -104,16 +131,16 @@
   font-weight: 700;
 }
  
-.games-container19.games-container19 {
+.games-container20.games-container20 {
   width: 482px;
   height: 222px;
 }
  
-.games-container20.games-container20 {
+.games-container21.games-container21 {
   display: contents;
 }
  
-.games-thq-btn-elm15.games-thq-btn-elm15 {
+.games-thq-btn-elm16.games-thq-btn-elm16 {
   text-decoration: none;
 }
  
@@ -122,16 +149,16 @@
   font-weight: 700;
 }
  
-.games-container21.games-container21 {
+.games-container22.games-container22 {
   width: 482px;
   height: 222px;
 }
  
-.games-container22.games-container22 {
+.games-container23.games-container23 {
   display: contents;
 }
  
-.games-thq-btn-elm16.games-thq-btn-elm16 {
+.games-thq-btn-elm17.games-thq-btn-elm17 {
   text-decoration: none;
 }
  
@@ -140,9 +167,27 @@
   font-weight: 700;
 }
  
+.games-container24.games-container24 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container25.games-container25 {
+  display: contents;
+}
+ 
 .games-thq-steam-slot-tag-elm17.games-thq-steam-slot-tag-elm17 {
   font-size: 18px;
   font-weight: 700;
+}
+ 
+.games-container26.games-container26 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container27.games-container27 {
+  display: contents;
 }
  
 .games-thq-steam-slot-tag-elm18.games-thq-steam-slot-tag-elm18 {
@@ -150,9 +195,27 @@
   font-weight: 700;
 }
  
+.games-container28.games-container28 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container29.games-container29 {
+  display: contents;
+}
+ 
 .games-thq-steam-slot-tag-elm19.games-thq-steam-slot-tag-elm19 {
   font-size: 18px;
   font-weight: 700;
+}
+ 
+.games-container30.games-container30 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container31.games-container31 {
+  display: contents;
 }
  
 .games-thq-steam-slot-tag-elm20.games-thq-steam-slot-tag-elm20 {
@@ -160,9 +223,27 @@
   font-weight: 700;
 }
  
+.games-container32.games-container32 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container33.games-container33 {
+  display: contents;
+}
+ 
 .games-thq-steam-slot-tag-elm21.games-thq-steam-slot-tag-elm21 {
   font-size: 18px;
   font-weight: 700;
+}
+ 
+.games-container34.games-container34 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container35.games-container35 {
+  display: contents;
 }
  
 .games-thq-steam-slot-tag-elm22.games-thq-steam-slot-tag-elm22 {
@@ -170,9 +251,27 @@
   font-weight: 700;
 }
  
+.games-container36.games-container36 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container37.games-container37 {
+  display: contents;
+}
+ 
 .games-thq-steam-slot-tag-elm23.games-thq-steam-slot-tag-elm23 {
   font-size: 18px;
   font-weight: 700;
+}
+ 
+.games-container38.games-container38 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container39.games-container39 {
+  display: contents;
 }
  
 .games-thq-steam-slot-tag-elm24.games-thq-steam-slot-tag-elm24 {
@@ -180,9 +279,27 @@
   font-weight: 700;
 }
  
+.games-container40.games-container40 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container41.games-container41 {
+  display: contents;
+}
+ 
 .games-thq-steam-slot-tag-elm25.games-thq-steam-slot-tag-elm25 {
   font-size: 18px;
   font-weight: 700;
+}
+ 
+.games-container42.games-container42 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container43.games-container43 {
+  display: contents;
 }
  
 .games-thq-steam-slot-tag-elm26.games-thq-steam-slot-tag-elm26 {
@@ -190,9 +307,27 @@
   font-weight: 700;
 }
  
+.games-container44.games-container44 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container45.games-container45 {
+  display: contents;
+}
+ 
 .games-thq-steam-slot-tag-elm27.games-thq-steam-slot-tag-elm27 {
   font-size: 18px;
   font-weight: 700;
+}
+ 
+.games-container46.games-container46 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container47.games-container47 {
+  display: contents;
 }
  
 .games-thq-steam-slot-tag-elm28.games-thq-steam-slot-tag-elm28 {
@@ -200,20 +335,38 @@
   font-weight: 700;
 }
  
+.games-container48.games-container48 {
+  width: 482px;
+  height: 222px;
+}
+ 
+.games-container49.games-container49 {
+  display: contents;
+}
+ 
 .games-thq-steam-slot-tag-elm29.games-thq-steam-slot-tag-elm29 {
   font-size: 18px;
   font-weight: 700;
 }
  
-.games-container23.games-container23 {
-  display: none;
+.games-container50.games-container50 {
+  width: 482px;
+  height: 222px;
 }
  
-.games-container24.games-container24 {
+.games-container51.games-container51 {
   display: contents;
 }
  
-.games-container25.games-container25 {
+.games-container52.games-container52 {
+  display: none;
+}
+ 
+.games-container53.games-container53 {
+  display: contents;
+}
+ 
+.games-container54.games-container54 {
   right: 50px;
   border: 1px solid #ffffff5c;
   bottom: 30px;
@@ -232,12 +385,12 @@
   background-color: rgba(41, 41, 41, 0.41);
 }
  
-.games-icon88.games-icon88 {
+.games-icon76.games-icon76 {
   width: 24px;
   margin-right: 4px;
 }
  
-.games-text31.games-text31 {
+.games-text32.games-text32 {
   color: white;
   font-size: 13px;
   font-style: normal;
