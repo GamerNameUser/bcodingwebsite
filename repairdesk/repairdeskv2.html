@@ -135,13 +135,14 @@
           <button onclick="switchView('settings')" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">Setup</button>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-3 gap-2">
           <button onclick="exportBackupJSON()" class="px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition" title="Download JSON Backup">
             <span>💾</span> Backup
           </button>
           <button onclick="toggleTheme()" class="px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
             <span id="theme-icon">☀️</span> <span id="theme-label">Light</span>
           </button>
+          <span id="syncStatusText" style="font-size: 12px; color: #888; margin-left: 10px;">Cloud: Idle</span>
         </div>
       </div>
     </aside>
