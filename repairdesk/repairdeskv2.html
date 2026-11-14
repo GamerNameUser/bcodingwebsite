@@ -142,7 +142,7 @@
           <button onclick="toggleTheme()" class="px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
             <span id="theme-icon">☀️</span> <span id="theme-label">Light</span>
           </button>
-          <span id="syncStatusText" style="font-size: 12px; color: #888; margin-left: 10px;">Cloud: Idle</span>
+          <span id="syncStatusText" style="font-size: 11px; color: #888; padding: 2px 4px;">Cloud: Idle</span> 
         </div>
       </div>
     </aside>
@@ -2387,8 +2387,28 @@
       showToast('Settings Saved', 'Workshop profile updated.', 'success');
     }
 
-    // ==================== INITIALIZATION ====================
+// ==================== INITIALIZATION ====================
     window.addEventListener('DOMContentLoaded', async () => {
+      // 5-Minute Background Auto-Sync Timer
+      setInterval(async () => {
+        const settings = state.settings;
+        if (settings && settings.gistId && settings.githubToken) {
+          console.log("[Auto-Sync] Running background sync pull...");
+          const success = await pullFromCloudGist(false); // false = silent background pull
+          const statusEl = document.getElementById('syncStatusText');
+          if (statusEl) {
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            if (success) {
+              statusEl.textContent = `Synced: ${timeStr}`;
+              statusEl.style.color = '#10B981'; // Green
+            } else {
+              statusEl.textContent = `Sync Failed`;
+              statusEl.style.color = '#EF4444'; // Red
+            }
+          }
+        }
+      }, 10000); // 300,000 ms = exactly 5 minutes
+
       loadState();
       const urlParams = new URLSearchParams(window.location.search);
       const portalParam = urlParams.get('portal');
