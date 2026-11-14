@@ -931,8 +931,134 @@
         .replace(/"/g, '&quot;');
     }
 
+    // Normalize legacy & new backup JSON schemas seamlessly
+    function normalizeTicket(raw) {
+      if (!raw || typeof raw !== 'object') return raw;
+      const items = Array.isArray(raw.items) ? raw.items.map(item => ({
+        desc: item.desc ?? item.description ?? '',
+        description: item.description ?? item.desc ?? '',
+        qty: Number(item.qty) || 1,
+        price: Number(item.price ?? item.unitPrice) || 0,
+        unitPrice: Number(item.unitPrice ?? item.price) || 0
+      })) : [];
+
+      return {
+        ...raw,
+        id: raw.id || `RPR-${state.ticketCounter}`,
+        customerName: raw.customerName || 'Unknown Customer',
+        customerPhone: raw.customerPhone || '',
+        deviceModel: raw.deviceModel || raw.deviceName || 'Unnamed Device',
+        deviceName: raw.deviceName || raw.deviceModel || 'Unnamed Device',
+        serialNumber: raw.serialNumber || raw.deviceSerial || '',
+        deviceSerial: raw.deviceSerial || raw.serialNumber || '',
+        assetTag: raw.assetTag || '',
+        category: raw.category || '',
+        description: raw.description || '',
+        status: raw.status || 'Received',
+        priority: raw.priority || 'Normal',
+        includeVat: Boolean(raw.includeVat),
+        createdAt: raw.createdAt || new Date().toISOString(),
+        items,
+        payments: Array.isArray(raw.payments) ? raw.payments : []
+      };
+    }
+
+    function normalizeAsset(raw) {
+      if (!raw || typeof raw !== 'object') return raw;
+      const tag = raw.tag || raw.tagId || `AST-${state.assetCounter}`;
+      const name = raw.name || raw.deviceName || 'Unnamed Asset';
+      const owner = raw.owner || raw.ownerName || 'Workshop / General';
+      return {
+        ...raw,
+        tag,
+        tagId: tag,
+        name,
+        deviceName: name,
+        owner,
+        ownerName: owner,
+        serial: raw.serial || '',
+        category: raw.category || '',
+        createdAt: raw.createdAt || new Date().toISOString()
+      };
+    }
+
+    function generateBarcodePNGDataURL(code, subtitle = '', footerText = '') {
+      const cleanCode = (code || 'RPR-1001').trim();
+      const tempSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      try {
+        JsBarcode(tempSvg, cleanCode, {
+          format: 'CODE128',
+          lineColor: '#000000',
+          width: 2.1,
+          height: 52,
+          displayValue: true,
+          font: 'monospace',
+          fontOptions: 'bold',
+          fontSize: 15,
+          margin: 6
+        });
+      } catch (e) {
+        return '';
+      }
+
+      const svgData = new XMLSerializer().serializeToString(tempSvg);
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const svgUrl = URL.createObjectURL(svgBlob);
+
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const hasHeader = Boolean(footerText);
+          const hasSub = Boolean(subtitle);
+          const width = Math.max(300, img.width + 28);
+          const height = img.height + (hasHeader ? 24 : 8) + (hasSub ? 22 : 8);
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, width, height);
+
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(2, 2, width - 4, height - 4);
+
+          let yOffset = 4;
+          if (hasHeader) {
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(footerText.toUpperCase(), width / 2, 18);
+            yOffset = 22;
+          }
+
+          ctx.drawImage(img, (width - img.width) / 2, yOffset);
+
+          if (hasSub) {
+            ctx.fillStyle = '#334155';
+            ctx.font = '600 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(subtitle.slice(0, 42), width / 2, height - 8);
+          }
+
+          URL.revokeObjectURL(svgUrl);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(svgUrl);
+          resolve('');
+        };
+        img.src = svgUrl;
+      });
+    }
+
     function getTicketFinancials(ticket) {
-      const subtotal = (ticket.items || []).reduce((sum, item) => sum + (Number(item.qty) || 0) * (Number(item.price) || 0), 0);
+      const subtotal = (ticket.items || []).reduce((sum, item) => {
+        const qty = Number(item.qty) || 0;
+        const price = Number(item.price ?? item.unitPrice) || 0;
+        return sum + qty * price;
+      }, 0);
       const vat = ticket.includeVat ? subtotal * 0.15 : 0;
       const total = subtotal + vat;
       const paid = (ticket.payments || []).reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
@@ -1052,11 +1178,11 @@
         if (rawCategories) state.categories = JSON.parse(rawCategories) || [];
 
         const rawAssets = localStorage.getItem(STORAGE_KEYS.ASSETS);
-        if (rawAssets) state.assets = JSON.parse(rawAssets) || [];
+        if (rawAssets) state.assets = (JSON.parse(rawAssets) || []).map(normalizeAsset);
 
         const rawTickets = localStorage.getItem(STORAGE_KEYS.TICKETS);
         if (rawTickets) {
-          state.tickets = JSON.parse(rawTickets) || [];
+          state.tickets = (JSON.parse(rawTickets) || []).map(normalizeTicket);
         } else {
           loadSampleData();
         }
@@ -1201,8 +1327,8 @@
         if (!fileObj || !fileObj.content) throw new Error('No JSON file found in Gist.');
 
         const parsed = JSON.parse(fileObj.content);
-        if (Array.isArray(parsed.tickets)) state.tickets = parsed.tickets;
-        if (Array.isArray(parsed.assets)) state.assets = parsed.assets;
+        if (Array.isArray(parsed.tickets)) state.tickets = parsed.tickets.map(normalizeTicket);
+        if (Array.isArray(parsed.assets)) state.assets = parsed.assets.map(normalizeAsset);
         if (Array.isArray(parsed.categories)) state.categories = parsed.categories;
         if (parsed.ticketCounter) state.ticketCounter = parseInt(parsed.ticketCounter, 10) || state.ticketCounter;
         if (parsed.assetCounter) state.assetCounter = parseInt(parsed.assetCounter, 10) || state.assetCounter;
@@ -1257,13 +1383,6 @@
       input.value = '';
     }
 
-    function promptQuickAddCategory() {
-      const name = prompt('Enter new custom category name (e.g. "For Myself" or "Asset Tags for Repairs"):');
-      if (name && name.trim()) {
-        addCustomCategory(name.trim());
-      }
-    }
-
     function deleteCustomCategory(catName) {
       state.categories = state.categories.filter(c => c !== catName);
       state.tickets.forEach(t => { if (t.category === catName) t.category = ''; });
@@ -1271,6 +1390,11 @@
       saveState();
       refreshAllUI();
       showToast('Category Removed', `"${catName}" deleted and items moved to Uncategorized.`, 'info');
+    }
+
+    function promptQuickAddCategory() {
+      const name = prompt('Enter new category name (e.g. "For Myself", "Asset Tags for Repairs"):');
+      if (name) addCustomCategory(name);
     }
 
     function populateAllCategoryDropdowns() {
@@ -2010,9 +2134,12 @@
       reader.onload = (e) => {
         try {
           const parsed = JSON.parse(e.target.result);
-          if (Array.isArray(parsed.tickets)) state.tickets = parsed.tickets;
-          if (Array.isArray(parsed.assets)) state.assets = parsed.assets;
+          if (Array.isArray(parsed.tickets)) state.tickets = parsed.tickets.map(normalizeTicket);
+          if (Array.isArray(parsed.assets)) state.assets = parsed.assets.map(normalizeAsset);
           if (Array.isArray(parsed.categories)) state.categories = parsed.categories;
+          if (parsed.settings && typeof parsed.settings === 'object') {
+            state.settings = { ...state.settings, ...parsed.settings };
+          }
           if (parsed.ticketCounter) state.ticketCounter = parseInt(parsed.ticketCounter, 10) || state.ticketCounter;
           if (parsed.assetCounter) state.assetCounter = parseInt(parsed.assetCounter, 10) || state.assetCounter;
           saveState();
@@ -2239,31 +2366,38 @@
         return;
       }
 
-      container.innerHTML = filtered.map(a => {
+      container.innerHTML = filtered.map((a, idx) => {
         const catOptions = `<option value="" ${!a.category ? 'selected' : ''}>Uncategorized</option>` +
           state.categories.map(c => `<option value="${escapeHTML(c)}" ${a.category === c ? 'selected' : ''}>🗂️ ${escapeHTML(c)}</option>`).join('');
 
         return `
-          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
-            <div class="flex items-start justify-between gap-2">
-              <div>
-                <span class="px-2.5 py-0.5 rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-400 font-mono text-xs font-extrabold">${escapeHTML(a.tag)}</span>
-                <h3 class="font-bold text-sm mt-1.5">${escapeHTML(a.name)}</h3>
-                <div class="text-[11px] text-slate-500">Owner: ${escapeHTML(a.owner)} ${a.serial ? '• SN: ' + escapeHTML(a.serial) : ''}</div>
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3 flex flex-col justify-between">
+            <div class="space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <span class="px-2.5 py-0.5 rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-400 font-mono text-xs font-extrabold">${escapeHTML(a.tag)}</span>
+                  <h3 class="font-bold text-sm mt-1.5 truncate">${escapeHTML(a.name)}</h3>
+                  <div class="text-[11px] text-slate-500 truncate">Owner: ${escapeHTML(a.owner)} ${a.serial ? '• SN: ' + escapeHTML(a.serial) : ''}</div>
+                </div>
+                <button onclick="deleteAssetTag('${escapeHTML(a.tag).replace(/'/g, "\\'")}')" class="text-rose-500 hover:bg-rose-500/10 p-1.5 rounded-lg text-xs shrink-0" title="Delete Asset Tag">🗑️</button>
               </div>
-              <button onclick="deleteAssetTag('${escapeHTML(a.tag)}')" class="text-rose-500 hover:bg-rose-500/10 p-1.5 rounded-lg text-xs">🗑️</button>
+
+              <!-- Live PNG Barcode Image Preview -->
+              <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 flex items-center justify-center">
+                <img id="asset-barcode-img-${idx}" data-barcode-code="${escapeHTML(a.tag)}" data-barcode-sub="${escapeHTML(a.name)}" alt="${escapeHTML(a.tag)} Barcode" class="max-h-24 w-auto rounded bg-white shadow-2xs" />
+              </div>
             </div>
 
             <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-              <select onchange="moveAssetCategoryInline('${escapeHTML(a.tag)}', this.value)" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-[11px] font-semibold outline-none">
+              <select onchange="moveAssetCategoryInline('${escapeHTML(a.tag).replace(/'/g, "\\'")}', this.value)" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-[11px] font-semibold outline-none max-w-[135px]">
                 ${catOptions}
               </select>
 
               <div class="flex items-center gap-1.5">
-                <button onclick="openStickerModal('${escapeHTML(a.tag)}', '${escapeHTML(a.name)}', '${escapeHTML(a.owner)}')" class="px-2.5 py-1.5 rounded-xl bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 text-xs font-bold">
-                  🏷️ PNG
+                <button onclick="openStickerModal('${escapeHTML(a.tag).replace(/'/g, "\\'")}', '${escapeHTML(a.name).replace(/'/g, "\\'")}', '${escapeHTML(a.owner).replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-xl bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600/25 text-xs font-bold">
+                  🏷️ Print
                 </button>
-                <button onclick="startNewTicket('${escapeHTML(a.tag)}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold">
+                <button onclick="startNewTicket('${escapeHTML(a.tag).replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
                   + Repair
                 </button>
               </div>
@@ -2271,6 +2405,16 @@
           </div>
         `;
       }).join('');
+
+      // Render crisp PNG barcode images into every Asset Tag card
+      filtered.forEach(async (a, idx) => {
+        const imgEl = document.getElementById(`asset-barcode-img-${idx}`);
+        if (!imgEl) return;
+        const dataUrl = await generateBarcodePNGDataURL(a.tag, a.name, '');
+        if (dataUrl && document.getElementById(`asset-barcode-img-${idx}`)) {
+          document.getElementById(`asset-barcode-img-${idx}`).src = dataUrl;
+        }
+      });
     }
 
     function renderPaymentsTable() {
