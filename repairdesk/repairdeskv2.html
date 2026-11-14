@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RepairDesk ZAR — Ultimate Workshop POS & Inventory Manager</title>
+
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- JsBarcode for Real High-Contrast Code128 Barcode PNG Generation -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <!-- html5-qrcode for Built-In Phone/Webcam Barcode & QR Scanning -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
+
+    @media print {
+      body * { visibility: hidden !important; }
+      #print-area, #print-area * { visibility: visible !important; }
+      #print-area {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: white !important;
+        color: black !important;
+        padding: 10mm !important;
+        z-index: 99999 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- Customer Portal Banner Overlay (if ?portal=TICKET_ID is opened) -->
+  <div id="customer-portal-banner" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-6 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div>
+          <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold">Live Customer Portal</span>
+          <h2 id="portal-shop-title" class="font-display text-xl font-extrabold mt-1">RepairDesk ZAR</h2>
+        </div>
+        <button onclick="closeCustomerPortal()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">✕ Close</button>
+      </div>
+
+      <div id="portal-content-body" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <div class="flex min-h-screen">
+    <!-- Left Sidebar Navigation -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white/90 dark:bg-slate-900/95 backdrop-blur-xl border-r border-slate-200/80 dark:border-slate-800 flex flex-col transition-transform duration-200 -translate-x-full lg:translate-x-0">
+      <!-- Brand Header -->
+      <div class="p-5 flex items-center justify-between border-b border-slate-200/70 dark:border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center font-display font-extrabold text-white text-xl shadow-lg shadow-emerald-500/25">
+            R
+          </div>
+          <div>
+            <div id="sidebar-shop-name" class="font-display font-extrabold text-base tracking-tight leading-tight">RepairDesk ZAR</div>
+            <div class="text-[11px] font-mono text-emerald-600 dark:text-emerald-400">ZAR POS • INVENTORY • SLA</div>
+          </div>
+        </div>
+        <button onclick="toggleSidebar(false)" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white">✕</button>
+      </div>
+
+      <!-- Primary Action Button -->
+      <div class="p-4">
+        <button onclick="startNewTicket()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+          <span class="text-base font-bold">+</span> New Repair Ticket
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
+        <button data-nav="dashboard" onclick="switchView('dashboard')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-2.5"><span>📊</span> Dashboard</span>
+        </button>
+        <button data-nav="tickets" onclick="switchView('tickets')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-2.5"><span>🛠️</span> Repair Tickets</span>
+          <span id="nav-ticket-count" class="px-2 py-0.5 text-[11px] font-mono font-bold rounded-full bg-slate-200/80 dark:bg-slate-800">0</span>
+        </button>
+        <button data-nav="inventory" onclick="switchView('inventory')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-2.5"><span>📦</span> Parts & Inventory</span>
+          <span id="nav-low-stock-badge" class="hidden px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-rose-500 text-white">0 low</span>
+        </button>
+        <button data-nav="customers" onclick="switchView('customers')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-2.5"><span>👥</span> Customers</span>
+          <span id="nav-customer-count" class="px-2 py-0.5 text-[11px] font-mono font-bold rounded-full bg-slate-200/80 dark:bg-slate-800">0</span>
+        </button>
+        <button data-nav="assets" onclick="switchView('assets')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-2.5"><span>🏷️</span> Asset Tags</span>
+          <span id="nav-asset-count" class="px-2 py-0.5 text-[11px] font-mono font-bold rounded-full bg-slate-200/80 dark:bg-slate-800">0</span>
+        </button>
+        <button data-nav="payments" onclick="switchView('payments')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-2.5"><span>💳</span> Payments (ZAR)</span>
+        </button>
+        <button data-nav="settings" onclick="switchView('settings')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-2.5"><span>⚙️</span> Discord & Settings</span>
+        </button>
+      </nav>
+
+      <!-- Bottom Quick Status & Controls -->
+      <div class="p-4 border-t border-slate-200/70 dark:border-slate-800 space-y-2.5">
+        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/70 text-xs">
+          <span class="flex items-center gap-2 font-medium">
+            <span id="discord-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <span id="discord-status-text">Discord Not Set</span>
+          </span>
+          <button onclick="switchView('settings')" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">Setup</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="exportBackupJSON()" class="px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition" title="Download JSON Backup">
+            <span>💾</span> Backup
+          </button>
+          <button onclick="toggleTheme()" class="px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+            <span id="theme-icon">☀️</span> <span id="theme-label">Light</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 lg:pl-64 flex flex-col min-w-0">
+      <!-- Sticky Top Barcode Scanner & Lookup Bar -->
+      <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 px-4 sm:px-6 py-3">
+        <div class="max-w-7xl mx-auto flex items-center gap-3">
+          <button onclick="toggleSidebar(true)" class="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
+            ☰
+          </button>
+
+          <!-- Global Barcode Scanner / Manual Lookup Input -->
+          <div class="flex-1 flex items-center gap-2 bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-emerald-500">
+            <span class="text-slate-400 text-sm">🔍</span>
+            <input
+              id="global-scan-input"
+              type="text"
+              placeholder="Scan barcode or type Ticket ID, Asset Tag, or Part Barcode (Press / to focus)..."
+              class="w-full bg-transparent text-xs sm:text-sm font-mono outline-none placeholder:font-sans placeholder:text-slate-400"
+              onkeydown="if(event.key==='Enter'){ event.preventDefault(); handleGlobalScanLookup(this.value); }"
+            />
+            <button type="button" onclick="openCameraScannerModal('global')" class="shrink-0 px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1 shadow-xs transition" title="Scan barcode using phone or PC camera">
+              <span>📷</span> <span class="hidden sm:inline">Scan</span>
+            </button>
+            <button type="button" onclick="handleGlobalScanLookup(document.getElementById('global-scan-input').value)" class="shrink-0 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
+              Lookup
+            </button>
+          </div>
+
+          <button onclick="openStickerModal('RPR-' + state.ticketCounter, 'Sample Repair Tag', 'Customer Device')" class="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-semibold transition">
+            <span>🖨️</span> Sticker Studio
+          </button>
+        </div>
+      </header>
+
+      <!-- Workspace Views Container -->
+      <main class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+
+        <!-- ==================== VIEW 1: DASHBOARD ==================== -->
+        <section id="view-dashboard" class="space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h1 class="font-display text-2xl font-extrabold tracking-tight">Workshop Overview</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Live repair pipeline, SLA tracking, South African Rand (R) revenue, and inventory stock alerts.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openCameraScannerModal('global')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                <span>📷</span> Scan Barcode
+              </button>
+              <button onclick="startNewTicket()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
+                + Create Ticket
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Bento Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                <span>Active Repairs & SLA</span>
+                <span class="p-1.5 rounded-lg bg-amber-500/10 text-amber-500">🛠️</span>
+              </div>
+              <div class="flex items-baseline gap-2 mt-2">
+                <div id="kpi-active-tickets" class="font-display text-2xl font-extrabold">0</div>
+                <div id="kpi-sla-overdue" class="text-xs font-bold text-rose-500"></div>
+              </div>
+              <div class="text-[11px] text-slate-400 mt-1">In bench / awaiting turnaround</div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                <span>Total Billed (ZAR)</span>
+                <span class="p-1.5 rounded-lg bg-sky-500/10 text-sky-500">🧾</span>
+              </div>
+              <div id="kpi-total-billed" class="font-mono text-2xl font-extrabold mt-2 text-sky-600 dark:text-sky-400">R 0.00</div>
+              <div class="text-[11px] text-slate-400 mt-1">Across all repair jobs</div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                <span>Collected Revenue</span>
+                <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500">💰</span>
+              </div>
+              <div id="kpi-total-paid" class="font-mono text-2xl font-extrabold mt-2 text-emerald-600 dark:text-emerald-400">R 0.00</div>
+              <div class="text-[11px] text-slate-400 mt-1">Paid via Cash, Card & EFT</div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                <span>Parts & Inventory</span>
+                <span class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500">📦</span>
+              </div>
+              <div class="flex items-baseline gap-2 mt-2">
+                <div id="kpi-parts-count" class="font-display text-2xl font-extrabold">0</div>
+                <div id="kpi-low-stock-alert" class="text-xs font-bold text-rose-500"></div>
+              </div>
+              <div class="text-[11px] text-slate-400 mt-1">Catalog items tracked</div>
+            </div>
+          </div>
+
+          <!-- Recent Tickets & Inventory Alerts -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+              <div class="flex items-center justify-between">
+                <h2 class="font-bold text-base">Recent Repair Tickets & SLA</h2>
+                <button onclick="switchView('tickets')" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">View All →</button>
+              </div>
+              <div id="dashboard-recent-tickets" class="space-y-2.5"></div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+              <div class="flex items-center justify-between">
+                <h2 class="font-bold text-base">Low Stock Part Alerts</h2>
+                <button onclick="switchView('inventory')" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">Manage Parts →</button>
+              </div>
+              <div id="dashboard-low-stock-list" class="space-y-2.5"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW 2: ALL REPAIR TICKETS ==================== -->
+        <section id="view-tickets" class="hidden space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h1 class="font-display text-2xl font-extrabold tracking-tight">Repair Tickets & SLA</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Track job turnaround time, internal staff notes, payment balance, and barcode job cards.</p>
+            </div>
+            <button onclick="startNewTicket()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold self-start sm:self-auto">
+              + New Repair Ticket
+            </button>
+          </div>
+
+          <!-- Filters Bar -->
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+            <input id="ticket-search-filter" oninput="renderTicketsList()" type="text" placeholder="Search customer, device, barcode, phone..." class="sm:col-span-2 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
+            <select id="ticket-status-filter" onchange="renderTicketsList()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="ALL">All Statuses</option>
+              <option value="Received">Received / Intake</option>
+              <option value="Diagnosing">Diagnosing</option>
+              <option value="Waiting on Parts">Waiting on Parts</option>
+              <option value="In Repair">In Repair</option>
+              <option value="Ready for Collection">Ready for Collection</option>
+              <option value="Collected">Collected / Completed</option>
+            </select>
+            <select id="ticket-category-filter" onchange="renderTicketsList()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="ALL">All Categories</option>
+            </select>
+          </div>
+
+          <div id="tickets-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- ==================== VIEW 3: NEW TICKET FORM ==================== -->
+        <section id="view-new-ticket" class="hidden space-y-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="font-display text-2xl font-extrabold tracking-tight">Create New Repair Ticket</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Select prebuilt service presets, link inventory parts, assign condition checklists, and set SLA turnaround.</p>
+            </div>
+            <button onclick="switchView('tickets')" class="px-3.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold">
+              ← Back to Tickets
+            </button>
+          </div>
+
+          <!-- Service Presets Quick Bar -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-2">
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Quick Prebuilt Service Presets (Click to add)</div>
+            <div id="service-presets-quick-bar" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <form id="new-ticket-form" onsubmit="handleCreateTicket(event)" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left 2 Columns: Customer, Device, Condition & Line Items -->
+            <div class="lg:col-span-2 space-y-5">
+              <!-- Customer & Device Information -->
+              <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between">
+                  <h2 class="font-bold text-sm uppercase tracking-wider text-slate-400">1. Customer & Device Information</h2>
+                  <button type="button" onclick="openSelectCustomerModal()" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">📂 Pick Existing Customer</button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Customer Full Name *</label>
+                    <input id="nt-customer-name" required type="text" placeholder="e.g. Thabo Mokoena" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Phone / WhatsApp Number</label>
+                    <input id="nt-customer-phone" type="text" placeholder="e.g. 082 555 1234" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Device / Item Make & Model *</label>
+                    <input id="nt-device-model" required type="text" placeholder="e.g. Dell Latitude 5520 / iPhone 13" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Serial Number / IMEI (History Tracking)</label>
+                    <input id="nt-device-serial" type="text" placeholder="Serial / IMEI (auto-links history)" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
+                  </div>
+                </div>
+
+                <!-- Barcode ID, Linked Asset Tag & Category -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Ticket Barcode ID (Editable)</label>
+                    <div class="flex gap-1.5">
+                      <input id="nt-barcode-id" required type="text" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500" />
+                      <button type="button" onclick="regenerateTicketBarcode()" class="px-2.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-xs font-bold" title="Auto-generate next ID">↻</button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Linked Asset Tag</label>
+                    <div class="flex gap-1.5">
+                      <input id="nt-asset-tag" list="asset-tags-datalist" type="text" placeholder="Scan or type asset tag..." class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+                      <button type="button" onclick="openCameraScannerModal('nt-asset-tag')" class="px-2.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold" title="Scan Asset Tag with Camera">📷</button>
+                    </div>
+                    <datalist id="asset-tags-datalist"></datalist>
+                  </div>
+
+                  <div>
+                    <div class="flex items-center justify-between mb-1">
+                      <label class="block text-xs font-semibold">Category</label>
+                      <button type="button" onclick="promptQuickAddCategory()" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">+ New</button>
+                    </div>
+                    <select id="nt-category" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                      <option value="">Uncategorized</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold mb-1">Customer-Visible Problem Description *</label>
+                  <textarea id="nt-description" required rows="2" placeholder="Describe issue reported by customer..." class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold mb-1">🔒 Internal Staff Notes / Diagnostics (Hidden from Customer)</label>
+                  <textarea id="nt-internal-notes" rows="2" placeholder="Technician bench notes, passwords, internal part costs..." class="w-full px-3.5 py-2 rounded-xl bg-amber-500/10 dark:bg-amber-950/20 border border-amber-500/30 text-sm outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                </div>
+              </div>
+
+              <!-- Intake Device Condition Checklist -->
+              <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-3">
+                <h2 class="font-bold text-sm uppercase tracking-wider text-slate-400">Device Condition & Accessories Checklist</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-medium">
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 cursor-pointer"><input type="checkbox" class="nt-chk-cond rounded text-emerald-600" value="Scratches / Dents" /> Scratches / Dents</label>
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 cursor-pointer"><input type="checkbox" class="nt-chk-cond rounded text-emerald-600" value="Cracked Screen" /> Cracked Screen</label>
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 cursor-pointer"><input type="checkbox" class="nt-chk-cond rounded text-emerald-600" value="Includes Charger" /> Includes Charger</label>
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 cursor-pointer"><input type="checkbox" class="nt-chk-cond rounded text-emerald-600" value="Powers On" /> Powers On</label>
+                </div>
+              </div>
+
+              <!-- Repair Line Items & Inventory Parts (ZAR) -->
+              <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between">
+                  <h2 class="font-bold text-sm uppercase tracking-wider text-slate-400">2. Repair Line Items & Inventory Parts (R ZAR)</h2>
+                  <div class="flex gap-2">
+                    <button type="button" onclick="openPickInventoryPartModal()" class="px-3 py-1.5 rounded-xl bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600/25 text-xs font-bold">
+                      📦 Link Inventory Part
+                    </button>
+                    <button type="button" onclick="addLineItemRow()" class="px-3 py-1.5 rounded-xl bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600/25 text-xs font-bold">
+                      + Custom Item
+                    </button>
+                  </div>
+                </div>
+
+                <div id="nt-items-container" class="space-y-2.5"></div>
+              </div>
+            </div>
+
+            <!-- Right Column: Billing Summary, SLA & Discord -->
+            <div class="space-y-5">
+              <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4">
+                <h2 class="font-bold text-sm uppercase tracking-wider text-slate-400">3. Status, SLA & Payment</h2>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Initial Status</label>
+                    <select id="nt-status" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium outline-none">
+                      <option value="Received">Received</option>
+                      <option value="Diagnosing">Diagnosing</option>
+                      <option value="In Repair">In Repair</option>
+                      <option value="Waiting on Parts">Waiting on Parts</option>
+                      <option value="Ready for Collection">Ready for Collection</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Priority</label>
+                    <select id="nt-priority" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium outline-none">
+                      <option value="Normal">Normal</option>
+                      <option value="High">High</option>
+                      <option value="Urgent / Express">Urgent / Express</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold mb-1">SLA Target Completion Date</label>
+                  <input id="nt-due-date" type="date" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono outline-none" />
+                </div>
+
+                <label class="flex items-center gap-2 text-xs font-medium cursor-pointer pt-1">
+                  <input id="nt-include-vat" type="checkbox" onchange="recalculateNewTicketTotals()" class="rounded text-emerald-600" />
+                  Include 15% South African VAT
+                </label>
+
+                <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 space-y-2 font-mono text-xs">
+                  <div class="flex justify-between">
+                    <span class="text-slate-500">Subtotal:</span>
+                    <span id="nt-subtotal-display">R 0.00</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-500">VAT (15%):</span>
+                    <span id="nt-vat-display">R 0.00</span>
+                  </div>
+                  <div class="flex justify-between text-sm font-extrabold border-t border-slate-200 dark:border-slate-700 pt-2 text-emerald-600 dark:text-emerald-400">
+                    <span>Total (ZAR):</span>
+                    <span id="nt-total-display">R 0.00</span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Upfront Deposit (R)</label>
+                    <input id="nt-deposit-amount" type="number" min="0" step="0.01" value="0" oninput="recalculateNewTicketTotals()" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold mb-1">Payment Method</label>
+                    <select id="nt-deposit-method" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none">
+                      <option value="Cash">Cash</option>
+                      <option value="Card / Speedpoint">Card / Speedpoint</option>
+                      <option value="EFT">EFT</option>
+                      <option value="SnapScan / Zapper">SnapScan / Zapper</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="flex justify-between items-center text-xs font-mono px-1">
+                  <span class="text-slate-500">Balance Due on Pickup:</span>
+                  <span id="nt-balance-display" class="font-bold text-rose-500">R 0.00</span>
+                </div>
+
+                <label class="flex items-center gap-2 text-xs font-medium cursor-pointer pt-1">
+                  <input id="nt-send-discord" type="checkbox" checked class="rounded text-indigo-600" />
+                  Send Discord Webhook Embed on Create
+                </label>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition">
+                  ✅ Create Ticket & Deduct Stock
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <!-- ==================== VIEW 4: PARTS & INVENTORY ==================== -->
+        <section id="view-inventory" class="hidden space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h1 class="font-display text-2xl font-extrabold tracking-tight">Parts & Inventory Catalog (ZAR)</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Track stock levels, cost price vs selling price, supplier purchase links, and linked asset tags.</p>
+            </div>
+          </div>
+
+          <!-- Add Part Form -->
+          <form onsubmit="handleCreateInventoryPart(event)" class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4">
+            <h2 class="font-bold text-sm uppercase tracking-wider text-slate-400">Add New Inventory Part</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Part / Barcode ID *</label>
+                <input id="inv-part-id" required type="text" placeholder="e.g. PART-SSD-1TB" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold mb-1">Part Name / Description *</label>
+                <input id="inv-part-name" required type="text" placeholder="e.g. Crucial 1TB NVMe SSD" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Stock Qty</label>
+                <input id="inv-part-qty" type="number" min="0" value="5" required class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Cost Price (R)</label>
+                <input id="inv-part-cost" type="number" min="0" step="0.01" value="850" required class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Selling Price (R)</label>
+                <input id="inv-part-price" type="number" min="0" step="0.01" value="1350" required class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Supplier Buy Link (URL)</label>
+                <input id="inv-part-link" type="url" placeholder="https://www.takealot.com/... or supplier website" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Linked Asset Tag (Optional Equipment)</label>
+                <input id="inv-part-asset" list="asset-tags-datalist" type="text" placeholder="e.g. AST-TOOL-01" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none" />
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
+                + Add Part to Inventory
+              </button>
+            </div>
+          </form>
+
+          <div id="inventory-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- ==================== VIEW 5: CUSTOMER RECORDS ==================== -->
+        <section id="view-customers" class="hidden space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h1 class="font-display text-2xl font-extrabold tracking-tight">Customer Records & Profiles</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Multi-device history, contact details, and repeat repair spend across your shop.</p>
+            </div>
+          </div>
+
+          <!-- Filter Customers -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+            <input id="customer-search-filter" oninput="renderCustomersList()" type="text" placeholder="Search customer name, phone, email..." class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+
+          <div id="customers-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- ==================== VIEW 6: ASSET TAGS ==================== -->
+        <section id="view-assets" class="hidden space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h1 class="font-display text-2xl font-extrabold tracking-tight">Asset Tags & Equipment Barcodes</h1>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Type or auto-generate scannable asset tags, assign custom categories, and print PNG barcode stickers.</p>
+            </div>
+          </div>
+
+          <!-- Register New Asset Tag Card -->
+          <form onsubmit="handleCreateAssetTag(event)" class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4">
+            <h2 class="font-bold text-sm uppercase tracking-wider text-slate-400">Register New Asset Tag</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Asset Tag ID (Type or Auto) *</label>
+                <div class="flex gap-1">
+                  <input id="asset-tag-input" required type="text" placeholder="e.g. AST-5001" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500" />
+                  <button type="button" onclick="regenerateAssetTagInput()" class="px-2.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-xs font-bold" title="Auto-generate next tag">↻</button>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Equipment / Asset Name *</label>
+                <input id="asset-name-input" required type="text" placeholder="e.g. HP ProBook 450 G8" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Owner / Department</label>
+                <input id="asset-owner-input" type="text" placeholder="e.g. Workshop / Client Name" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Serial Number</label>
+                <input id="asset-serial-input" type="text" placeholder="Optional Serial" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-xs font-semibold">Category</label>
+                  <button type="button" onclick="promptQuickAddCategory()" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">+ New</button>
+                </div>
+                <select id="asset-category-input" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                  <option value="">Uncategorized</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
+                + Register Asset & Generate Barcode
+              </button>
+            </div>
+          </form>
+
+          <!-- Filter Asset Tags -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+            <input id="asset-search-filter" oninput="renderAssetsList()" type="text" placeholder="Search asset tag, equipment, owner, serial..." class="sm:col-span-2 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
+            <select id="asset-category-filter" onchange="renderAssetsList()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="ALL">All Categories</option>
+            </select>
+          </div>
+
+          <div id="assets-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- ==================== VIEW 7: PAYMENTS (ZAR) ==================== -->
+        <section id="view-payments" class="hidden space-y-5">
+          <div>
+            <h1 class="font-display text-2xl font-extrabold tracking-tight">Payments Ledger (ZAR)</h1>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">All deposits and final repair payments recorded across your tickets in South African Rand (R).</p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
+                  <th class="py-3 px-3">Date</th>
+                  <th class="py-3 px-3">Ticket Barcode</th>
+                  <th class="py-3 px-3">Customer</th>
+                  <th class="py-3 px-3">Method</th>
+                  <th class="py-3 px-3">Note</th>
+                  <th class="py-3 px-3 text-right">Amount (ZAR)</th>
+                </tr>
+              </thead>
+              <tbody id="payments-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/70 text-xs"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW 8: SETTINGS & CATALOG PRESETS ==================== -->
+        <section id="view-settings" class="hidden space-y-6">
+          <div>
+            <h1 class="font-display text-2xl font-extrabold tracking-tight">Discord, Catalog Presets & Cloud Settings</h1>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Configure prebuilt repair service pricing presets, Discord ZAR embeds, categories, and GitHub Cloud sync.</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Workshop & Discord Webhook Form -->
+            <form onsubmit="handleSaveSettings(event)" class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4">
+              <h3 class="font-bold text-base flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                <span>🔔</span> Workshop Profile & Discord Webhook
+              </h3>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold mb-1">Business Name</label>
+                  <input id="set-shop-name" type="text" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold mb-1">Workshop Phone</label>
+                  <input id="set-shop-phone" type="text" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold mb-1">Workshop Address</label>
+                <input id="set-shop-address" type="text" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold mb-1">Receipt / Job Card Terms</label>
+                <textarea id="set-shop-terms" rows="2" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold mb-1">Discord Webhook URL</label>
+                <input id="set-webhook-url" type="url" placeholder="https://discord.com/api/webhooks/..." class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+
+              <div class="space-y-2 pt-1 text-xs">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input id="set-auto-new" type="checkbox" class="rounded text-indigo-600" />
+                  Send embed when a new repair ticket is created
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input id="set-auto-status" type="checkbox" class="rounded text-indigo-600" />
+                  Send embed when a ticket status changes
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input id="set-auto-payment" type="checkbox" class="rounded text-indigo-600" />
+                  Send embed when a ZAR (R) payment is recorded
+                </label>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 pt-2">
+                <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
+                  💾 Save Settings
+                </button>
+                <button type="button" onclick="sendTestDiscordWebhook()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold">
+                  🚀 Test Discord Webhook
+                </button>
+              </div>
+            </form>
+
+            <!-- Service Catalog & Pricing Presets -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4">
+              <div class="border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                  <span>🛠️</span> Prebuilt Service & Pricing Presets (ZAR)
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Pre-configured repair services (e.g., Screen replacement at R 2,400) for instant 1-click ticket creation.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input id="preset-name-input" type="text" placeholder="Service Name (e.g. Battery Replacement)" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none" />
+                <div class="flex gap-2">
+                  <input id="preset-price-input" type="number" step="0.01" placeholder="Price (R)" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none" />
+                  <button type="button" onclick="addServicePreset()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shrink-0">+ Add</button>
+                </div>
+              </div>
+
+              <div id="service-presets-list" class="space-y-2 max-h-56 overflow-y-auto"></div>
+            </div>
+
+            <!-- Custom Categories Manager (Empty by Default) -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4">
+              <div class="border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                  <span>🗂️</span> Custom Categories (Repairs & Asset Tags)
+                </h3>
+              </div>
+
+              <div class="flex gap-2">
+                <input id="new-category-name" type="text" placeholder="e.g. For Myself, Asset Tags for Repairs..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addCustomCategoryFromInput(); }" />
+                <button type="button" onclick="addCustomCategoryFromInput()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
+                  + Add
+                </button>
+              </div>
+
+              <div id="settings-categories-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
+            </div>
+
+            <!-- GitHub Cloud Sync Card -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                  <span>☁️</span> GitHub Cloud Sync
+                </h3>
+                <span id="cloud-sync-badge" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono text-[11px] font-bold">
+                  Local Only
+                </span>
+              </div>
+
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-xs font-semibold mb-1">GitHub Gist ID</label>
+                  <input id="set-gist-id" type="text" placeholder="Gist ID..." class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold mb-1">GitHub Token (<code>gist</code> scope)</label>
+                  <input id="set-github-token" type="password" placeholder="ghp_..." class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs outline-none" />
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 pt-2">
+                <button type="button" onclick="createNewCloudGist()" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">✨ Create Gist</button>
+                <button type="button" onclick="pullFromCloudGist(true)" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold">⬇ Pull</button>
+                <button type="button" onclick="pushToCloudGist(true)" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold">⬆ Push</button>
+                <button type="button" onclick="copyShareableCloudLink()" class="px-3 py-2 rounded-xl bg-sky-600 text-white text-xs font-bold">🔗 Share Link</button>
+              </div>
+            </div>
+
+            <!-- Backup & CSV Export Card -->
+            <div class="lg:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+              <div class="border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                  <span>💾</span> Backup, Export & Restore Database
+                </h3>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-3">
+                <button type="button" onclick="exportBackupJSON()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
+                  ⬇ Export Full Backup (.JSON)
+                </button>
+                <label class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold cursor-pointer">
+                  ⬆ Restore From JSON File
+                  <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden" />
+                </label>
+                <button type="button" onclick="exportTicketsCSV()" class="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold">
+                  📊 Export Tickets (.CSV)
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 1: TICKET DETAIL & ACTIONS ==================== -->
+  <div id="ticket-detail-modal" class="fixed inset-0 z-50 hidden bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl">
+      <div class="flex items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span id="modal-ticket-id" class="font-mono text-sm font-extrabold text-emerald-600 dark:text-emerald-400">RPR-1001</span>
+            <span id="modal-ticket-priority" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 dark:bg-slate-800">Normal</span>
+            <span id="modal-ticket-sla-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold"></span>
+          </div>
+          <h3 id="modal-ticket-device" class="font-display text-lg font-extrabold mt-1">Device Model</h3>
+          <p id="modal-ticket-customer" class="text-xs text-slate-500">Customer Name • Phone</p>
+        </div>
+        <button onclick="closeModal('ticket-detail-modal')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold">✕</button>
+      </div>
+
+      <!-- Status, Category & SLA Controls -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Repair Status</label>
+          <select id="modal-ticket-status-select" onchange="updateActiveTicketStatus(this.value)" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold outline-none">
+            <option value="Received">Received</option>
+            <option value="Diagnosing">Diagnosing</option>
+            <option value="Waiting on Parts">Waiting on Parts</option>
+            <option value="In Repair">In Repair</option>
+            <option value="Ready for Collection">Ready for Collection</option>
+            <option value="Collected">Collected</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Move Category</label>
+          <select id="modal-ticket-category-select" onchange="updateActiveTicketCategory(this.value)" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold outline-none">
+            <option value="">Uncategorized</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">SLA Target Date</label>
+          <input id="modal-ticket-due-date" type="date" onchange="updateActiveTicketDueDate(this.value)" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold outline-none" />
+        </div>
+      </div>
+
+      <!-- Description, Internal Notes & Condition -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-xl bg-slate-100/80 dark:bg-slate-800/60 space-y-2 text-xs">
+          <div class="flex justify-between font-mono text-[11px] text-slate-500">
+            <span id="modal-ticket-serial">Serial: N/A</span>
+            <span id="modal-ticket-asset">Asset: None</span>
+          </div>
+          <div><strong>Customer Issue:</strong></div>
+          <p id="modal-ticket-desc" class="text-slate-700 dark:text-slate-200 leading-relaxed"></p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-amber-500/10 dark:bg-amber-950/20 border border-amber-500/30 space-y-2 text-xs">
+          <div class="flex items-center justify-between font-bold text-amber-600 dark:text-amber-400">
+            <span>🔒 Internal Staff Notes</span>
+            <button onclick="saveActiveInternalNotes(document.getElementById('modal-internal-notes-input').value)" class="px-2 py-1 rounded bg-amber-500 text-white text-[10px]">Save Notes</button>
+          </div>
+          <textarea id="modal-internal-notes-input" rows="3" class="w-full p-2.5 rounded-lg bg-white dark:bg-slate-900 text-xs outline-none border border-amber-500/30" placeholder="Diagnostics, passwords, technician notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Line Items -->
+      <div>
+        <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Repair Items & Parts (ZAR)</h4>
+        <div id="modal-ticket-items" class="space-y-1.5 text-xs"></div>
+      </div>
+
+      <!-- Financial Summary -->
+      <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/80 font-mono text-xs space-y-1.5">
+        <div class="flex justify-between"><span>Total Billed:</span><span id="modal-ticket-total" class="font-bold">R 0.00</span></div>
+        <div class="flex justify-between text-emerald-600 dark:text-emerald-400"><span>Total Paid:</span><span id="modal-ticket-paid" class="font-bold">R 0.00</span></div>
+        <div class="flex justify-between text-rose-500 border-t border-slate-200 dark:border-slate-700 pt-1.5 text-sm font-extrabold">
+          <span>Balance Due:</span><span id="modal-ticket-due">R 0.00</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="openRecordPaymentModal(activeDetailTicketId)" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
+            💳 Record Payment
+          </button>
+          <button onclick="printTicketReceipt(activeDetailTicketId)" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold">
+            📄 Print Receipt (PDF)
+          </button>
+          <button onclick="printJobCardWithBarcode(activeDetailTicketId)" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold">
+            🖨️ Job Card (Barcode)
+          </button>
+          <button onclick="openCustomerPortalForTicket(activeDetailTicketId)" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold">
+            🔗 Portal Link
+          </button>
+        </div>
+        <button onclick="deleteTicketById(activeDetailTicketId)" class="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-xs font-bold">
+          🗑️ Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: RECORD PAYMENT (ZAR) ==================== -->
+  <div id="payment-modal" class="fixed inset-0 z-50 hidden bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <form onsubmit="handleRecordPaymentSubmit(event)" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <h3 class="font-display font-extrabold text-base">Record ZAR Payment</h3>
+        <button type="button" onclick="closeModal('payment-modal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">✕</button>
+      </div>
+      <div class="text-xs text-slate-500">Ticket: <span id="pay-modal-ticket-label" class="font-mono font-bold text-emerald-500"></span></div>
+      <div>
+        <label class="block text-xs font-semibold mb-1">Amount Received (R ZAR) *</label>
+        <input id="pay-modal-amount" type="number" step="0.01" min="0.01" required class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-sm font-bold outline-none focus:ring-2 focus:ring-emerald-500" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1">Payment Method</label>
+        <select id="pay-modal-method" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none">
+          <option value="Cash">Cash</option>
+          <option value="Card / Speedpoint">Card / Speedpoint</option>
+          <option value="EFT">EFT</option>
+          <option value="SnapScan / Zapper">SnapScan / Zapper</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1">Reference / Note</label>
+        <input id="pay-modal-note" type="text" placeholder="e.g. Final collection payment" class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none" />
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeModal('payment-modal')" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold">Cancel</button>
+        <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">Save Payment</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ==================== MODAL 3: BARCODE STICKER STUDIO ==================== -->
+  <div id="sticker-modal" class="fixed inset-0 z-50 hidden bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <h3 class="font-display font-extrabold text-base">🏷️ Printable PNG Barcode Sticker Studio</h3>
+        <button onclick="closeModal('sticker-modal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Barcode Value</label>
+          <input id="sticker-code-input" type="text" oninput="renderStickerPNG()" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Sticker Subtitle</label>
+          <input id="sticker-sub-input" type="text" oninput="renderStickerPNG()" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center gap-2">
+        <img id="sticker-png-preview" alt="Barcode Sticker PNG" class="max-w-full rounded-lg shadow-md bg-white border border-slate-200" />
+        <span class="text-[11px] text-slate-400">Right-click to copy/save, download PNG, or print directly.</span>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-end gap-2">
+        <button onclick="downloadStickerPNG()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
+          ⬇ Download PNG Image
+        </button>
+        <button onclick="printStickerImage()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold">
+          🖨️ Print Sticker
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: PICK INVENTORY PART ==================== -->
+  <div id="pick-inventory-modal" class="fixed inset-0 z-50 hidden bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <h3 class="font-display font-extrabold text-base">📦 Select Part from Inventory Catalog</h3>
+        <button onclick="closeModal('pick-inventory-modal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">✕</button>
+      </div>
+
+      <input id="pick-part-search" type="text" oninput="renderPickInventoryList()" placeholder="Search part name or ID..." class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none" />
+
+      <div id="pick-inventory-results" class="space-y-2"></div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 5: SELECT EXISTING CUSTOMER ==================== -->
+  <div id="select-customer-modal" class="fixed inset-0 z-50 hidden bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <h3 class="font-display font-extrabold text-base">👥 Select Existing Customer Profile</h3>
+        <button onclick="closeModal('select-customer-modal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">✕</button>
+      </div>
+
+      <input id="pick-customer-search" type="text" oninput="renderSelectCustomerList()" placeholder="Search customer name or phone..." class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none" />
+
+      <div id="select-customer-results" class="space-y-2"></div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 6: CAMERA BARCODE SCANNER ==================== -->
+  <div id="camera-scanner-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <h3 class="font-display font-extrabold text-base flex items-center gap-2">
+          <span>📷</span> Camera Barcode & QR Scanner
+        </h3>
+        <button onclick="closeCameraScannerModal()" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">✕</button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <select id="camera-device-select" onchange="switchScannerCamera(this.value)" class="flex-1 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none"></select>
+        <button id="camera-torch-btn" type="button" onclick="toggleScannerTorch()" class="hidden px-3 py-2 rounded-xl bg-amber-500/20 text-amber-500 text-xs font-bold">🔦 Flash</button>
+      </div>
+
+      <div id="camera-reader-box" class="w-full overflow-hidden rounded-2xl bg-black min-h-[240px] flex items-center justify-center text-xs text-slate-400">
+        Starting camera...
+      </div>
+
+      <div class="flex justify-end">
+        <button type="button" onclick="closeCameraScannerModal()" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold">Close Scanner</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Print Container & Toast Container -->
+  <div id="print-area" class="hidden"></div>
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 max-w-sm w-full pointer-events-none"></div>
+
+  <script>
+    // ==================== STORAGE KEYS & STATE ====================
+    const STORAGE_KEYS = {
+      TICKETS: 'repairdesk_zar_tickets_v2',
+      ASSETS: 'repairdesk_zar_assets_v2',
+      INVENTORY: 'repairdesk_zar_inventory_v2',
+      CATEGORIES: 'repairdesk_zar_categories_v2',
+      PRESETS: 'repairdesk_zar_presets_v2',
+      SETTINGS: 'repairdesk_zar_settings_v2',
+      COUNTER: 'repairdesk_zar_counter_v2',
+      ASSET_COUNTER: 'repairdesk_zar_asset_counter_v2',
+      THEME: 'repairdesk_zar_theme_v2'
+    };
+
+    const DEFAULT_SETTINGS = {
+      shopName: 'RepairDesk ZAR',
+      shopPhone: '011 555 0199',
+      shopAddress: 'White River, Mpumalanga, South Africa',
+      shopTerms: '30-day warranty on parts & workmanship. Uncollected devices after 60 days may be sold to recover repair costs.',
+      webhookUrl: '',
+      autoSendNewTicket: true,
+      autoSendStatusChange: false,
+      autoSendPayment: false,
+      gistId: '',
+      githubToken: '',
+      autoCloudSync: true
+    };
+
+    const state = {
+      tickets: [],
+      assets: [],
+      inventory: [],
+      categories: [],
+      servicePresets: [
+        { name: 'Laptop Screen Replacement', price: 2400 },
+        { name: 'Battery Replacement', price: 950 },
+        { name: 'Diagnostic & Bench Fee', price: 350 },
+        { name: 'Data Recovery Service', price: 1200 },
+        { name: 'Software Reset / OS Install', price: 650 }
+      ],
+      settings: { ...DEFAULT_SETTINGS },
+      ticketCounter: 1001,
+      assetCounter: 5001,
+      theme: 'dark'
+    };
+
+    let activeDetailTicketId = null;
+    let activePaymentTicketId = null;
+    let html5QrScannerInstance = null;
+    let scannerTargetMode = 'global';
+    let scannerTorchOn = false;
+    let cloudSyncDebounceTimer = null;
+
+    // ==================== CURRENCY & HELPERS ====================
+    function formatZAR(amount) {
+      const num = Number(amount) || 0;
+      return 'R ' + num.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function escapeHTML(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function getTicketFinancials(ticket) {
+      const subtotal = (ticket.items || []).reduce((sum, item) => sum + (Number(item.qty) || 0) * (Number(item.price ?? item.unitPrice) || 0), 0);
+      const vat = ticket.includeVat ? subtotal * 0.15 : 0;
+      const total = subtotal + vat;
+      const paid = (ticket.payments || []).reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      const balance = Math.max(0, total - paid);
+      return { subtotal, vat, total, paid, balance };
+    }
+
+    function showToast(title, message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const colors = {
+        success: 'border-emerald-500/50 bg-slate-900 text-white',
+        error: 'border-rose-500/50 bg-slate-900 text-white',
+        warning: 'border-amber-500/50 bg-slate-900 text-white',
+        info: 'border-sky-500/50 bg-slate-900 text-white'
+      };
+      const el = document.createElement('div');
+      el.className = `pointer-events-auto p-3.5 rounded-xl border shadow-xl transition-all duration-200 ${colors[type] || colors.info}`;
+      el.innerHTML = `<div class="font-bold text-xs">${escapeHTML(title)}</div><div class="text-[11px] text-slate-300 mt-0.5">${escapeHTML(message)}</div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.remove(); }, 4000);
+    }
+
+    // ==================== THEME & NAVIGATION ====================
+    function applyTheme(theme) {
+      state.theme = theme === 'light' ? 'light' : 'dark';
+      document.documentElement.classList.toggle('dark', state.theme === 'dark');
+      localStorage.setItem(STORAGE_KEYS.THEME, state.theme);
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+      if (icon) icon.textContent = state.theme === 'dark' ? '☀️' : '🌙';
+      if (label) label.textContent = state.theme === 'dark' ? 'Light' : 'Dark';
+    }
+
+    function toggleTheme() {
+      applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+    }
+
+    function toggleSidebar(open) {
+      const sb = document.getElementById('sidebar');
+      if (!sb) return;
+      sb.classList.toggle('-translate-x-full', !open);
+    }
+
+    function switchView(viewName) {
+      const views = ['dashboard', 'tickets', 'new-ticket', 'inventory', 'customers', 'assets', 'payments', 'settings'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.classList.toggle('hidden', v !== viewName);
+      });
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        const active = btn.getAttribute('data-nav') === viewName;
+        btn.className = active
+          ? 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 transition'
+          : 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition';
+      });
+
+      toggleSidebar(false);
+      refreshAllUI();
+    }
+
+    function closeModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.add('hidden');
+    }
+
+    // ==================== STORAGE & PERSISTENCE ====================
+    function buildSyncPayload() {
+      return {
+        app: 'RepairDesk ZAR v2',
+        updatedAt: new Date().toISOString(),
+        ticketCounter: state.ticketCounter,
+        assetCounter: state.assetCounter,
+        categories: state.categories,
+        servicePresets: state.servicePresets,
+        tickets: state.tickets,
+        assets: state.assets,
+        inventory: state.inventory,
+        publicSettings: {
+          shopName: state.settings.shopName,
+          shopPhone: state.settings.shopPhone,
+          shopAddress: state.settings.shopAddress,
+          shopTerms: state.settings.shopTerms
+        }
+      };
+    }
+
+    function saveState(skipCloudPush = false) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(state.tickets));
+        localStorage.setItem(STORAGE_KEYS.ASSETS, JSON.stringify(state.assets));
+        localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(state.inventory));
+        localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(state.categories));
+        localStorage.setItem(STORAGE_KEYS.PRESETS, JSON.stringify(state.servicePresets));
+        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(state.settings));
+        localStorage.setItem(STORAGE_KEYS.COUNTER, String(state.ticketCounter));
+        localStorage.setItem(STORAGE_KEYS.ASSET_COUNTER, String(state.assetCounter));
+
+        if (!skipCloudPush && state.settings.autoCloudSync && state.settings.gistId && state.settings.githubToken) {
+          clearTimeout(cloudSyncDebounceTimer);
+          cloudSyncDebounceTimer = setTimeout(() => { pushToCloudGist(false); }, 900);
+        }
+      } catch (err) {
+        console.error('Storage error:', err);
+      }
+    }
+
+    function loadState() {
+      const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
+      applyTheme(savedTheme);
+
+      try {
+        const rawSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+        if (rawSettings) state.settings = { ...DEFAULT_SETTINGS, ...JSON.parse(rawSettings) };
+
+        const rawCategories = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
+        if (rawCategories) state.categories = JSON.parse(rawCategories) || [];
+
+        const rawPresets = localStorage.getItem(STORAGE_KEYS.PRESETS);
+        if (rawPresets) state.servicePresets = JSON.parse(rawPresets) || state.servicePresets;
+
+        const rawInventory = localStorage.getItem(STORAGE_KEYS.INVENTORY);
+        if (rawInventory) state.inventory = JSON.parse(rawInventory) || [];
+        else {
+          state.inventory = [
+            { id: 'PART-SSD-1TB', name: 'Crucial 1TB NVMe SSD', qty: 6, minQty: 2, cost: 850, price: 1350, buyLink: 'https://takealot.com', linkedAsset: '' },
+            { id: 'PART-THERMAL', name: 'Thermal Grizzly Kryonaut', qty: 1, minQty: 3, cost: 120, price: 250, buyLink: 'https://carbonite.co.za', linkedAsset: '' }
+          ];
+        }
+
+        const rawAssets = localStorage.getItem(STORAGE_KEYS.ASSETS);
+        if (rawAssets) state.assets = JSON.parse(rawAssets) || [];
+
+        const rawTickets = localStorage.getItem(STORAGE_KEYS.TICKETS);
+        if (rawTickets) {
+          state.tickets = JSON.parse(rawTickets) || [];
+        } else {
+          loadSampleData();
+        }
+
+        state.ticketCounter = parseInt(localStorage.getItem(STORAGE_KEYS.COUNTER), 10) || (1001 + state.tickets.length);
+        state.assetCounter = parseInt(localStorage.getItem(STORAGE_KEYS.ASSET_COUNTER), 10) || (5001 + state.assets.length);
+      } catch (err) {
+        console.error('Load error:', err);
+      }
+    }
+
+    function loadSampleData() {
+      const today = new Date();
+      const slaDate = new Date(today.setDate(today.getDate() + 2)).toISOString().slice(0, 10);
+      state.tickets = [
+        {
+          id: 'RPR-1001',
+          customerName: 'Sipho Ndlovu',
+          customerPhone: '083 412 8890',
+          deviceModel: 'ASUS ROG Zephyrus G14',
+          serialNumber: 'SN-ASUS99812',
+          assetTag: 'AST-5001',
+          category: '',
+          description: 'Overheating under load + left fan rattling.',
+          internalNotes: 'Client approved thermal repaste. Ordered fan replacement.',
+          condition: ['Scratches / Dents', 'Includes Charger'],
+          status: 'In Repair',
+          priority: 'High',
+          dueDate: slaDate,
+          includeVat: false,
+          createdAt: new Date().toISOString(),
+          items: [
+            { desc: 'Replacement CPU Cooling Fan', qty: 1, price: 850 },
+            { desc: 'Thermal Grizzly Repaste & Labour', qty: 1, price: 550 }
+          ],
+          payments: [
+            { id: 'PAY-1', date: new Date().toISOString(), amount: 700, method: 'EFT', note: '50% Parts Deposit' }
+          ]
+        }
+      ];
+      state.assets = [
+        { tag: 'AST-5001', name: 'ASUS ROG Zephyrus G14', owner: 'Sipho Ndlovu', serial: 'SN-ASUS99812', category: '', createdAt: new Date().toISOString() }
+      ];
+      saveState(true);
+    }
+
+    // ==================== GITHUB CLOUD SYNC ====================
+    async function createNewCloudGist() {
+      const token = (document.getElementById('set-github-token')?.value || state.settings.githubToken || '').trim();
+      if (!token) {
+        showToast('Token Needed', 'Paste a GitHub Personal Access Token (with gist scope).', 'warning');
+        return;
+      }
+      state.settings.githubToken = token;
+      try {
+        const res = await fetch('https://api.github.com/gists', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description: 'RepairDesk ZAR Cloud Database', public: true, files: { 'repairdesk_zar_data.json': { content: JSON.stringify(buildSyncPayload(), null, 2) } } })
+        });
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const data = await res.json();
+        state.settings.gistId = data.id;
+        state.settings.autoCloudSync = true;
+        saveState(true);
+        refreshAllUI();
+        showToast('Cloud Database Created!', `Gist ID: ${data.id}`, 'success');
+      } catch (err) {
+        showToast('Cloud Failed', 'Check your GitHub token permissions.', 'error');
+      }
+    }
+
+    async function pushToCloudGist(notify = true) {
+      const gistId = (document.getElementById('set-gist-id')?.value || state.settings.gistId || '').trim();
+      const token = (document.getElementById('set-github-token')?.value || state.settings.githubToken || '').trim();
+      if (!gistId || !token) return false;
+      try {
+        const res = await fetch(`https://api.github.com/gists/${encodeURIComponent(gistId)}`, {
+          method: 'PATCH',
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ files: { 'repairdesk_zar_data.json': { content: JSON.stringify(buildSyncPayload(), null, 2) } } })
+        });
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        if (notify) showToast('Cloud Synced', 'Data pushed to GitHub successfully.', 'success');
+        return true;
+      } catch (err) {
+        if (notify) showToast('Sync Failed', 'Could not push to GitHub Gist.', 'error');
+        return false;
+      }
+    }
+
+    async function pullFromCloudGist(notify = true) {
+      const gistId = (document.getElementById('set-gist-id')?.value || state.settings.gistId || '').trim();
+      if (!gistId) return false;
+      try {
+        const headers = { 'Accept': 'application/vnd.github+json' };
+        if (state.settings.githubToken) headers['Authorization'] = `Bearer ${state.settings.githubToken}`;
+        const res = await fetch(`https://api.github.com/gists/${encodeURIComponent(gistId)}?t=${Date.now()}`, { headers });
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const gist = await res.json();
+        const fileObj = gist.files?.['repairdesk_zar_data.json'] || Object.values(gist.files || {})[0];
+        if (!fileObj || !fileObj.content) return false;
+        const parsed = JSON.parse(fileObj.content);
+        if (Array.isArray(parsed.tickets)) state.tickets = parsed.tickets;
+        if (Array.isArray(parsed.assets)) state.assets = parsed.assets;
+        if (Array.isArray(parsed.inventory)) state.inventory = parsed.inventory;
+        if (Array.isArray(parsed.categories)) state.categories = parsed.categories;
+        if (Array.isArray(parsed.servicePresets)) state.servicePresets = parsed.servicePresets;
+        if (parsed.publicSettings) state.settings = { ...state.settings, ...parsed.publicSettings };
+        saveState(true);
+        refreshAllUI();
+        if (notify) showToast('Cloud Data Loaded', `Synced ${state.tickets.length} tickets & ${state.inventory.length} parts.`, 'success');
+        return true;
+      } catch (err) {
+        if (notify) showToast('Pull Failed', 'Could not fetch cloud database.', 'error');
+        return false;
+      }
+    }
+
+    function copyShareableCloudLink() {
+      const gistId = (document.getElementById('set-gist-id')?.value || state.settings.gistId || '').trim();
+      if (!gistId) {
+        showToast('Create Cloud First', 'Initialize a GitHub Gist ID first.', 'warning');
+        return;
+      }
+      const shareUrl = new URL(window.location.href);
+      shareUrl.searchParams.set('sync', gistId);
+      navigator.clipboard.writeText(shareUrl.toString()).then(() => {
+        showToast('Shareable Link Copied!', 'Anyone with this link can view your shop database.', 'success');
+      });
+    }
+
+    // ==================== INVENTORY & PARTS ====================
+    function handleCreateInventoryPart(event) {
+      event.preventDefault();
+      const id = document.getElementById('inv-part-id').value.trim();
+      if (state.inventory.some(p => p.id.toLowerCase() === id.toLowerCase())) {
+        showToast('Duplicate ID', `Part ID "${id}" already exists.`, 'error');
+        return;
+      }
+      const part = {
+        id,
+        name: document.getElementById('inv-part-name').value.trim(),
+        qty: parseInt(document.getElementById('inv-part-qty').value, 10) || 0,
+        minQty: 2,
+        cost: parseFloat(document.getElementById('inv-part-cost').value) || 0,
+        price: parseFloat(document.getElementById('inv-part-price').value) || 0,
+        buyLink: document.getElementById('inv-part-link').value.trim(),
+        linkedAsset: document.getElementById('inv-part-asset').value.trim()
+      };
+      state.inventory.unshift(part);
+      saveState();
+      event.target.reset();
+      refreshAllUI();
+      showToast('Part Added', `${part.name} added to inventory.`, 'success');
+    }
+
+    function deleteInventoryPart(partId) {
+      state.inventory = state.inventory.filter(p => p.id !== partId);
+      saveState();
+      refreshAllUI();
+      showToast('Part Removed', `Deleted ${partId}.`, 'info');
+    }
+
+    function renderInventoryList() {
+      const container = document.getElementById('inventory-list-container');
+      if (!container) return;
+
+      if (state.inventory.length === 0) {
+        container.innerHTML = `<div class="md:col-span-3 p-8 rounded-2xl bg-white dark:bg-slate-900 border text-center text-xs text-slate-400">No parts in inventory. Add one above!</div>`;
+        return;
+      }
+
+      container.innerHTML = state.inventory.map(part => {
+        const isLow = part.qty <= (part.minQty || 2);
+        const margin = part.cost > 0 ? (((part.price - part.cost) / part.price) * 100).toFixed(0) : 0;
+        return `
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-3 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-start justify-between">
+                <div>
+                  <span class="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-500 font-mono text-xs font-bold">${escapeHTML(part.id)}</span>
+                  <h3 class="font-bold text-sm mt-1">${escapeHTML(part.name)}</h3>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isLow ? 'bg-rose-500/15 text-rose-500' : 'bg-emerald-500/15 text-emerald-500'}">
+                  Qty: ${part.qty} ${isLow ? '⚠️ Low' : ''}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2 font-mono text-xs pt-1">
+                <div class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800">
+                  <div class="text-[10px] text-slate-400">Cost</div>
+                  <div class="font-bold">${formatZAR(part.cost)}</div>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800">
+                  <div class="text-[10px] text-slate-400">Sell Price</div>
+                  <div class="font-bold text-emerald-500">${formatZAR(part.price)}</div>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800">
+                  <div class="text-[10px] text-slate-400">Margin</div>
+                  <div class="font-bold text-sky-500">${margin}%</div>
+                </div>
+              </div>
+
+              ${part.linkedAsset ? `<div class="text-[11px] font-mono text-slate-500">🏷️ Linked Asset: <a href="#" onclick="handleGlobalScanLookup('${escapeHTML(part.linkedAsset)}'); return false;" class="text-sky-400 underline">${escapeHTML(part.linkedAsset)}</a></div>` : ''}
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+              ${part.buyLink ? `<a href="${escapeHTML(part.buyLink)}" target="_blank" class="text-sky-500 font-semibold hover:underline">🛒 Buy Supplier Link</a>` : '<span>No link</span>'}
+              <button onclick="deleteInventoryPart('${escapeHTML(part.id)}')" class="text-rose-500 font-bold hover:underline">Remove</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openPickInventoryPartModal() {
+      document.getElementById('pick-inventory-modal').classList.remove('hidden');
+      renderPickInventoryList();
+    }
+
+    function renderPickInventoryList() {
+      const q = (document.getElementById('pick-part-search')?.value || '').toLowerCase();
+      const container = document.getElementById('pick-inventory-results');
+      if (!container) return;
+
+      const matches = state.inventory.filter(p => p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q));
+      if (matches.length === 0) {
+        container.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">No inventory parts found.</div>`;
+        return;
+      }
+
+      container.innerHTML = matches.map(part => `
+        <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-between gap-3 text-xs">
+          <div>
+            <div class="font-mono font-bold text-emerald-500">${escapeHTML(part.id)} — ${escapeHTML(part.name)}</div>
+            <div class="text-[11px] text-slate-400">Stock: ${part.qty} | Sell: ${formatZAR(part.price)}</div>
+          </div>
+          <button type="button" onclick="addPartToTicketItems('${escapeHTML(part.id)}')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold shrink-0">
+            + Add to Ticket
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function addPartToTicketItems(partId) {
+      const part = state.inventory.find(p => p.id === partId);
+      if (!part) return;
+      addLineItemRow(part.name, 1, part.price);
+      closeModal('pick-inventory-modal');
+      showToast('Part Linked', `Added ${part.name} to ticket line items.`, 'success');
+    }
+
+    // ==================== CUSTOMER PROFILES & HISTORY ====================
+    function renderCustomersList() {
+      const q = (document.getElementById('customer-search-filter')?.value || '').toLowerCase().trim();
+      const container = document.getElementById('customers-list-container');
+      if (!container) return;
+
+      // Group tickets by customer phone or name
+      const customerMap = {};
+      state.tickets.forEach(t => {
+        const key = (t.customerPhone || t.customerName || 'unknown').toLowerCase();
+        if (!customerMap[key]) {
+          customerMap[key] = {
+            name: t.customerName,
+            phone: t.customerPhone,
+            tickets: [],
+            totalSpend: 0
+          };
+        }
+        customerMap[key].tickets.push(t);
+        customerMap[key].totalSpend += getTicketFinancials(t).total;
+      });
+
+      const list = Object.values(customerMap).filter(c =>
+        !q || c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q))
+      );
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="md:col-span-2 p-8 rounded-2xl bg-white dark:bg-slate-900 border text-center text-xs text-slate-400">No customer records found.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(c => `
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-3">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="font-bold text-base">${escapeHTML(c.name)}</h3>
+              <div class="text-xs text-slate-500">📞 ${escapeHTML(c.phone || 'No phone number')}</div>
+            </div>
+            <div class="text-right font-mono">
+              <div class="text-xs font-bold text-emerald-500">${formatZAR(c.totalSpend)}</div>
+              <div class="text-[10px] text-slate-400">${c.tickets.length} total repair job(s)</div>
+            </div>
+          </div>
+
+          <div class="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div class="text-[11px] font-bold text-slate-400 uppercase">Device & Ticket History:</div>
+            ${c.tickets.map(t => `
+              <div onclick="openTicketDetailModal('${escapeHTML(t.id)}')" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between text-xs cursor-pointer transition">
+                <div>
+                  <span class="font-mono font-bold text-emerald-500">${escapeHTML(t.id)}</span> — <span>${escapeHTML(t.deviceModel)}</span>
+                  <div class="text-[10px] text-slate-400 font-mono">Serial: ${escapeHTML(t.serialNumber || 'N/A')}</div>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 font-bold text-[10px]">${escapeHTML(t.status)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openSelectCustomerModal() {
+      document.getElementById('select-customer-modal').classList.remove('hidden');
+      renderSelectCustomerList();
+    }
+
+    function renderSelectCustomerList() {
+      const q = (document.getElementById('pick-customer-search')?.value || '').toLowerCase();
+      const container = document.getElementById('select-customer-results');
+      if (!container) return;
+
+      const customerMap = {};
+      state.tickets.forEach(t => {
+        const key = (t.customerPhone || t.customerName || '').toLowerCase();
+        if (key && !customerMap[key]) {
+          customerMap[key] = { name: t.customerName, phone: t.customerPhone };
+        }
+      });
+      const list = Object.values(customerMap).filter(c => c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q)));
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">No existing customer profiles found.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(c => `
+        <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-between gap-3 text-xs">
+          <div>
+            <div class="font-bold">${escapeHTML(c.name)}</div>
+            <div class="text-[11px] text-slate-400">📞 ${escapeHTML(c.phone || 'N/A')}</div>
+          </div>
+          <button type="button" onclick="applyCustomerProfile('${escapeHTML(c.name).replace(/'/g, "\\'")}', '${escapeHTML(c.phone || '')}')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold">
+            Select
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function applyCustomerProfile(name, phone) {
+      document.getElementById('nt-customer-name').value = name;
+      document.getElementById('nt-customer-phone').value = phone;
+      closeModal('select-customer-modal');
+      showToast('Customer Loaded', `Applied profile for ${name}.`, 'success');
+    }
+
+    // ==================== SERVICE PRESETS & CATEGORIES ====================
+    function addServicePreset() {
+      const name = document.getElementById('preset-name-input').value.trim();
+      const price = parseFloat(document.getElementById('preset-price-input').value) || 0;
+      if (!name) return;
+      state.servicePresets.push({ name, price });
+      saveState();
+      document.getElementById('preset-name-input').value = '';
+      document.getElementById('preset-price-input').value = '';
+      refreshAllUI();
+      showToast('Preset Added', `Service preset "${name}" saved.`, 'success');
+    }
+
+    function deleteServicePreset(index) {
+      state.servicePresets.splice(index, 1);
+      saveState();
+      refreshAllUI();
+    }
+
+    function addCustomCategory(name) {
+      const clean = (name || '').trim();
+      if (!clean || state.categories.includes(clean)) return;
+      state.categories.push(clean);
+      saveState();
+      refreshAllUI();
+      showToast('Category Added', `"${clean}" is now available.`, 'success');
+    }
+
+    function addCustomCategoryFromInput() {
+      const input = document.getElementById('new-category-name');
+      if (!input) return;
+      addCustomCategory(input.value);
+      input.value = '';
+    }
+
+    function deleteCustomCategory(catName) {
+      state.categories = state.categories.filter(c => c !== catName);
+      saveState();
+      refreshAllUI();
+    }
+
+    function promptQuickAddCategory() {
+      const name = prompt('Enter new category name:');
+      if (name) addCustomCategory(name);
+    }
+
+    // ==================== NEW TICKET & LINE ITEMS ====================
+    function startNewTicket(prefillAssetTag = '') {
+      switchView('new-ticket');
+      resetNewTicketForm();
+      if (prefillAssetTag) {
+        document.getElementById('nt-asset-tag').value = prefillAssetTag;
+        const asset = state.assets.find(a => a.tag.toLowerCase() === prefillAssetTag.toLowerCase());
+        if (asset) {
+          document.getElementById('nt-device-model').value = asset.name || '';
+          document.getElementById('nt-device-serial').value = asset.serial || '';
+          document.getElementById('nt-customer-name').value = asset.owner || '';
+          document.getElementById('nt-category').value = asset.category || '';
+        }
+      }
+    }
+
+    function regenerateTicketBarcode() {
+      const el = document.getElementById('nt-barcode-id');
+      if (el) el.value = `RPR-${state.ticketCounter}`;
+    }
+
+    function resetNewTicketForm() {
+      const form = document.getElementById('new-ticket-form');
+      if (form) form.reset();
+      regenerateTicketBarcode();
+      const sendChk = document.getElementById('nt-send-discord');
+      if (sendChk) sendChk.checked = Boolean(state.settings.autoSendNewTicket);
+
+      // Default SLA due date to +3 days from today
+      const d = new Date();
+      d.setDate(d.getDate() + 3);
+      const dueInput = document.getElementById('nt-due-date');
+      if (dueInput) dueInput.value = d.toISOString().slice(0, 10);
+
+      const container = document.getElementById('nt-items-container');
+      if (container) {
+        container.innerHTML = '';
+        addLineItemRow('Diagnostic & Bench Labour', 1, 350);
+      }
+      recalculateNewTicketTotals();
+    }
+
+    function addLineItemRow(desc = '', qty = 1, price = 0) {
+      const container = document.getElementById('nt-items-container');
+      if (!container) return;
+      const row = document.createElement('div');
+      row.className = 'nt-item-row grid grid-cols-12 gap-2 items-center';
+      row.innerHTML = `
+        <input type="text" placeholder="Part or service description..." value="${escapeHTML(desc)}" required class="item-desc col-span-6 sm:col-span-7 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs outline-none" />
+        <input type="number" min="1" step="1" value="${qty}" oninput="recalculateNewTicketTotals()" required class="item-qty col-span-2 px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs text-center outline-none" />
+        <input type="number" min="0" step="0.01" value="${price}" oninput="recalculateNewTicketTotals()" required class="item-price col-span-3 sm:col-span-2 px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs text-right outline-none" />
+        <button type="button" onclick="this.parentElement.remove(); recalculateNewTicketTotals();" class="col-span-1 text-center text-rose-500 hover:bg-rose-500/10 py-2 rounded-xl text-xs font-bold">✕</button>
+      `;
+      container.appendChild(row);
+      recalculateNewTicketTotals();
+    }
+
+    function recalculateNewTicketTotals() {
+      let subtotal = 0;
+      document.querySelectorAll('.nt-item-row').forEach(row => {
+        const qty = parseFloat(row.querySelector('.item-qty')?.value) || 0;
+        const price = parseFloat(row.querySelector('.item-price')?.value) || 0;
+        subtotal += qty * price;
+      });
+      const includeVat = Boolean(document.getElementById('nt-include-vat')?.checked);
+      const vat = includeVat ? subtotal * 0.15 : 0;
+      const total = subtotal + vat;
+      const deposit = parseFloat(document.getElementById('nt-deposit-amount')?.value) || 0;
+      const balance = Math.max(0, total - deposit);
+
+      document.getElementById('nt-subtotal-display').textContent = formatZAR(subtotal);
+      document.getElementById('nt-vat-display').textContent = formatZAR(vat);
+      document.getElementById('nt-total-display').textContent = formatZAR(total);
+      document.getElementById('nt-balance-display').textContent = formatZAR(balance);
+    }
+
+    async function handleCreateTicket(event) {
+      event.preventDefault();
+      const barcodeId = (document.getElementById('nt-barcode-id').value || `RPR-${state.ticketCounter}`).trim();
+      if (state.tickets.some(t => t.id.toLowerCase() === barcodeId.toLowerCase())) {
+        showToast('Duplicate ID', `Ticket ID "${barcodeId}" already exists.`, 'error');
+        return;
+      }
+
+      const items = [];
+      document.querySelectorAll('.nt-item-row').forEach(row => {
+        const desc = row.querySelector('.item-desc')?.value.trim();
+        const qty = parseFloat(row.querySelector('.item-qty')?.value) || 1;
+        const price = parseFloat(row.querySelector('.item-price')?.value) || 0;
+        if (desc) items.push({ desc, qty, price });
+      });
+
+      const condition = [];
+      document.querySelectorAll('.nt-chk-cond:checked').forEach(chk => condition.push(chk.value));
+
+      const depositAmount = parseFloat(document.getElementById('nt-deposit-amount').value) || 0;
+      const payments = depositAmount > 0
+        ? [{ id: 'PAY-' + Date.now(), date: new Date().toISOString(), amount: depositAmount, method: document.getElementById('nt-deposit-method').value, note: 'Intake Deposit' }]
+        : [];
+
+      const newTicket = {
+        id: barcodeId,
+        customerName: document.getElementById('nt-customer-name').value.trim(),
+        customerPhone: document.getElementById('nt-customer-phone').value.trim(),
+        deviceModel: document.getElementById('nt-device-model').value.trim(),
+        serialNumber: document.getElementById('nt-device-serial').value.trim(),
+        assetTag: document.getElementById('nt-asset-tag').value.trim(),
+        category: document.getElementById('nt-category').value,
+        description: document.getElementById('nt-description').value.trim(),
+        internalNotes: document.getElementById('nt-internal-notes').value.trim(),
+        condition,
+        status: document.getElementById('nt-status').value,
+        priority: document.getElementById('nt-priority').value,
+        dueDate: document.getElementById('nt-due-date').value,
+        includeVat: Boolean(document.getElementById('nt-include-vat').checked),
+        createdAt: new Date().toISOString(),
+        items,
+        payments
+      };
+
+      state.tickets.unshift(newTicket);
+      state.ticketCounter += 1;
+      saveState();
+      refreshAllUI();
+
+      showToast('Repair Ticket Created', `Ticket ${newTicket.id} saved.`, 'success');
+
+      if (document.getElementById('nt-send-discord')?.checked && state.settings.webhookUrl) {
+        await sendDiscordTicketEmbed(newTicket, 'NEW_TICKET');
+      }
+
+      switchView('tickets');
+      openTicketDetailModal(newTicket.id);
+    }
+
+    // ==================== TICKET DETAIL & PRINT LAYOUTS ====================
+    function openTicketDetailModal(ticketId) {
+      const ticket = state.tickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+      activeDetailTicketId = ticket.id;
+
+      const fin = getTicketFinancials(ticket);
+      const isOverdue = ticket.dueDate && new Date(ticket.dueDate) < new Date() && ticket.status !== 'Collected';
+
+      document.getElementById('modal-ticket-id').textContent = ticket.id;
+      document.getElementById('modal-ticket-priority').textContent = ticket.priority;
+      document.getElementById('modal-ticket-device').textContent = ticket.deviceModel;
+      document.getElementById('modal-ticket-customer').textContent = `${ticket.customerName}${ticket.customerPhone ? ' • ' + ticket.customerPhone : ''}`;
+      document.getElementById('modal-ticket-status-select').value = ticket.status;
+      document.getElementById('modal-ticket-category-select').value = ticket.category || '';
+      document.getElementById('modal-ticket-due-date').value = ticket.dueDate || '';
+
+      const slaBadge = document.getElementById('modal-ticket-sla-badge');
+      if (ticket.dueDate) {
+        slaBadge.className = `px-2 py-0.5 rounded-md text-[11px] font-bold ${isOverdue ? 'bg-rose-500/15 text-rose-500' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`;
+        slaBadge.textContent = isOverdue ? `⚠️ SLA Overdue (${ticket.dueDate})` : `SLA: ${ticket.dueDate}`;
+      } else {
+        slaBadge.textContent = '';
+      }
+
+      document.getElementById('modal-ticket-serial').textContent = `Serial: ${ticket.serialNumber || 'N/A'}`;
+      document.getElementById('modal-ticket-asset').textContent = `Asset Tag: ${ticket.assetTag || 'None'}`;
+      document.getElementById('modal-ticket-desc').textContent = ticket.description;
+      document.getElementById('modal-internal-notes-input').value = ticket.internalNotes || '';
+
+      document.getElementById('modal-ticket-items').innerHTML = (ticket.items || []).map(item => `
+        <div class="flex justify-between items-center px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800/60">
+          <span>${escapeHTML(item.desc)} <span class="text-slate-400">×${item.qty}</span></span>
+          <span class="font-mono font-bold">${formatZAR(item.qty * (item.price ?? item.unitPrice))}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('modal-ticket-total').textContent = formatZAR(fin.total);
+      document.getElementById('modal-ticket-paid').textContent = formatZAR(fin.paid);
+      document.getElementById('modal-ticket-due').textContent = formatZAR(fin.balance);
+
+      document.getElementById('ticket-detail-modal').classList.remove('hidden');
+    }
+
+    async function updateActiveTicketStatus(newStatus) {
+      const ticket = state.tickets.find(t => t.id === activeDetailTicketId);
+      if (!ticket) return;
+      ticket.status = newStatus;
+      saveState();
+      refreshAllUI();
+      showToast('Status Updated', `${ticket.id} moved to "${newStatus}".`, 'info');
+      if (state.settings.autoSendStatusChange && state.settings.webhookUrl) {
+        await sendDiscordTicketEmbed(ticket, 'STATUS_UPDATE');
+      }
+    }
+
+    function updateActiveTicketCategory(newCat) {
+      const ticket = state.tickets.find(t => t.id === activeDetailTicketId);
+      if (!ticket) return;
+      ticket.category = newCat;
+      saveState();
+      refreshAllUI();
+    }
+
+    function updateActiveTicketDueDate(newDate) {
+      const ticket = state.tickets.find(t => t.id === activeDetailTicketId);
+      if (!ticket) return;
+      ticket.dueDate = newDate;
+      saveState();
+      refreshAllUI();
+      showToast('SLA Updated', `Target completion date set to ${newDate}.`, 'info');
+    }
+
+    function saveActiveInternalNotes(notes) {
+      const ticket = state.tickets.find(t => t.id === activeDetailTicketId);
+      if (!ticket) return;
+      ticket.internalNotes = notes.trim();
+      saveState();
+      showToast('Notes Saved', 'Internal technician notes updated.', 'success');
+    }
+
+    function deleteTicketById(ticketId) {
+      state.tickets = state.tickets.filter(t => t.id !== ticketId);
+      saveState();
+      closeModal('ticket-detail-modal');
+      refreshAllUI();
+      showToast('Ticket Deleted', `Removed ${ticketId}.`, 'info');
+    }
+
+    // ==================== PRINT LAYOUTS (RECEIPT, JOB CARD, INVOICE) ====================
+    function printTicketReceipt(ticketId) {
+      const t = state.tickets.find(x => x.id === ticketId);
+      if (!t) return;
+      const fin = getTicketFinancials(t);
+      const printArea = document.getElementById('print-area');
+      printArea.classList.remove('hidden');
+      printArea.innerHTML = `
+        <div style="font-family: sans-serif; max-width: 190mm; margin: auto; color: #000; padding: 10mm;">
+          <div style="display:flex; justify-content:space-between; border-bottom:2px solid #000; padding-bottom:8px;">
+            <div>
+              <h1 style="margin:0; font-size:22px;">${escapeHTML(state.settings.shopName)}</h1>
+              <div style="font-size:12px;">${escapeHTML(state.settings.shopAddress)} • ${escapeHTML(state.settings.shopPhone)}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:monospace; font-size:16px; font-weight:bold;">TAX INVOICE / RECEIPT</div>
+              <div style="font-family:monospace; font-size:14px; font-weight:bold;">${escapeHTML(t.id)}</div>
+              <div style="font-size:11px;">Date: ${new Date(t.createdAt).toLocaleDateString('en-ZA')}</div>
+            </div>
+          </div>
+          <div style="margin:16px 0; font-size:13px;">
+            <strong>Customer:</strong> ${escapeHTML(t.customerName)} (${escapeHTML(t.customerPhone || 'N/A')})<br/>
+            <strong>Device:</strong> ${escapeHTML(t.deviceModel)} • <strong>Serial:</strong> ${escapeHTML(t.serialNumber || 'N/A')}<br/>
+            <strong>Fault Description:</strong> ${escapeHTML(t.description)}
+          </div>
+          <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:12px;">
+            <thead>
+              <tr style="border-bottom:1px solid #000; text-align:left;">
+                <th style="padding:6px 0;">Item / Service Description</th>
+                <th style="padding:6px 0; text-align:center;">Qty</th>
+                <th style="padding:6px 0; text-align:right;">Total (ZAR)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${(t.items || []).map(i => `
+                <tr style="border-bottom:1px solid #ddd;">
+                  <td style="padding:6px 0;">${escapeHTML(i.desc)}</td>
+                  <td style="padding:6px 0; text-align:center;">${i.qty}</td>
+                  <td style="padding:6px 0; text-align:right;">${formatZAR(i.qty * (i.price ?? i.unitPrice))}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <div style="margin-top:16px; text-align:right; font-family:monospace; font-size:13px;">
+            <div>Subtotal: ${formatZAR(fin.subtotal)}</div>
+            <div>VAT (15%): ${formatZAR(fin.vat)}</div>
+            <div style="font-size:16px; font-weight:bold;">Total: ${formatZAR(fin.total)}</div>
+            <div>Paid: ${formatZAR(fin.paid)}</div>
+            <div style="font-size:16px; font-weight:bold; color:${fin.balance > 0 ? 'red' : 'green'};">Balance Due: ${formatZAR(fin.balance)}</div>
+          </div>
+          <div style="margin-top:30px; font-size:10px; border-top:1px solid #ccc; padding-top:8px;">
+            ${escapeHTML(state.settings.shopTerms)}
+          </div>
+        </div>
+      `;
+      window.print();
+      setTimeout(() => printArea.classList.add('hidden'), 500);
+    }
+
+    function printJobCardWithBarcode(ticketId) {
+      const t = state.tickets.find(x => x.id === ticketId);
+      if (!t) return;
+      const printArea = document.getElementById('print-area');
+      printArea.classList.remove('hidden');
+      printArea.innerHTML = `
+        <div style="font-family: sans-serif; max-width: 190mm; margin: auto; color: #000; padding: 10mm;">
+          <div style="display:flex; justify-content:space-between; border-bottom:2px solid #000; padding-bottom:8px;">
+            <div>
+              <h1 style="margin:0; font-size:20px;">${escapeHTML(state.settings.shopName)} — JOB CARD</h1>
+              <div style="font-size:12px;">${escapeHTML(state.settings.shopAddress)}</div>
+            </div>
+            <div style="text-align:right; font-family:monospace; font-size:16px; font-weight:bold;">
+              ${escapeHTML(t.id)}
+            </div>
+          </div>
+          <div style="margin:16px 0; font-size:13px;">
+            <strong>Customer:</strong> ${escapeHTML(t.customerName)} (${escapeHTML(t.customerPhone || 'N/A')})<br/>
+            <strong>Device:</strong> ${escapeHTML(t.deviceModel)} • <strong>Serial:</strong> ${escapeHTML(t.serialNumber || 'N/A')}<br/>
+            <strong>Asset Tag:</strong> ${escapeHTML(t.assetTag || 'None')} • <strong>Priority:</strong> ${escapeHTML(t.priority)}<br/>
+            <strong>Condition Checklist:</strong> ${(t.condition || []).join(', ') || 'None noted'}
+          </div>
+          <div style="border:1px solid #000; padding:10px; margin-bottom:12px; font-size:12px;">
+            <strong>Customer Fault Description:</strong><br/>
+            ${escapeHTML(t.description)}
+          </div>
+          <div style="border:1px solid #000; padding:10px; margin-bottom:16px; font-size:12px; background:#f9f9f9;">
+            <strong>🔒 Internal Technician Notes:</strong><br/>
+            ${escapeHTML(t.internalNotes || 'No notes added yet.')}
+          </div>
+          <div style="text-align:center; margin-top:30px;">
+            <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">BARCODE ID: ${escapeHTML(t.id)}</div>
+            <svg id="print-jobcard-svg"></svg>
+          </div>
+        </div>
+      `;
+      try {
+        JsBarcode('#print-jobcard-svg', t.id, { format: 'CODE128', width: 2.2, height: 60, displayValue: true, fontSize: 16 });
+      } catch (e) {}
+      window.print();
+      setTimeout(() => printArea.classList.add('hidden'), 500);
+    }
+
+    // ==================== CUSTOMER PORTAL & PICKUP LINK ====================
+    function openCustomerPortalForTicket(ticketId) {
+      const ticket = state.tickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+      const fin = getTicketFinancials(ticket);
+      const shareUrl = new URL(window.location.href);
+      shareUrl.searchParams.set('portal', ticket.id);
+
+      const portalBody = document.getElementById('portal-content-body');
+      document.getElementById('portal-shop-title').textContent = state.settings.shopName;
+      portalBody.innerHTML = `
+        <div class="space-y-3 text-xs">
+          <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 space-y-1">
+            <div class="flex justify-between font-mono font-bold text-emerald-500"><span>Ticket ID:</span><span>${escapeHTML(ticket.id)}</span></div>
+            <div><strong>Device:</strong> ${escapeHTML(ticket.deviceModel)}</div>
+            <div><strong>Customer:</strong> ${escapeHTML(ticket.customerName)}</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 space-y-1">
+            <div class="flex justify-between"><span>Current Status:</span><strong class="text-indigo-400">${escapeHTML(ticket.status)}</strong></div>
+            <div class="flex justify-between"><span>Total Quote (ZAR):</span><span class="font-mono font-bold">${formatZAR(fin.total)}</span></div>
+            <div class="flex justify-between text-rose-500 font-bold"><span>Balance Due:</span><span class="font-mono">${formatZAR(fin.balance)}</span></div>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-center font-bold">
+            ${ticket.status === 'Ready for Collection' ? '🎉 Your device is ready for collection at our workshop!' : '🛠️ Your repair is currently in progress.'}
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Shareable Customer Portal Link:</label>
+            <input type="text" readonly value="${shareUrl.toString()}" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-[11px]" onclick="this.select()" />
+          </div>
+        </div>
+      `;
+      document.getElementById('customer-portal-banner').classList.remove('hidden');
+    }
+
+    function closeCustomerPortal() {
+      document.getElementById('customer-portal-banner').classList.add('hidden');
+      const u = new URL(window.location.href);
+      u.searchParams.delete('portal');
+      window.history.replaceState({}, '', u.toString());
+    }
+
+    // ==================== ASSET TAGS ====================
+    function regenerateAssetTagInput() {
+      const el = document.getElementById('asset-tag-input');
+      if (el) el.value = `AST-${state.assetCounter}`;
+    }
+
+    function handleCreateAssetTag(event) {
+      event.preventDefault();
+      const tag = (document.getElementById('asset-tag-input').value || `AST-${state.assetCounter}`).trim();
+      if (state.assets.some(a => a.tag.toLowerCase() === tag.toLowerCase())) {
+        showToast('Duplicate Tag', `Tag "${tag}" already exists.`, 'error');
+        return;
+      }
+      const newAsset = {
+        tag,
+        name: document.getElementById('asset-name-input').value.trim(),
+        owner: document.getElementById('asset-owner-input').value.trim() || 'Workshop',
+        serial: document.getElementById('asset-serial-input').value.trim(),
+        category: document.getElementById('asset-category-input').value,
+        createdAt: new Date().toISOString()
+      };
+      state.assets.unshift(newAsset);
+      state.assetCounter += 1;
+      saveState();
+      event.target.reset();
+      regenerateAssetTagInput();
+      refreshAllUI();
+      showToast('Asset Created', `${newAsset.tag} registered.`, 'success');
+    }
+
+    // ==================== DISCORD WEBHOOK ====================
+    async function sendDiscordTicketEmbed(ticket, eventType = 'NEW_TICKET') {
+      const url = (state.settings.webhookUrl || '').trim();
+      if (!url) return;
+      const fin = getTicketFinancials(ticket);
+      const payload = {
+        username: state.settings.shopName,
+        embeds: [{
+          title: `🛠️ Ticket Update (${eventType}): ${ticket.id}`,
+          description: `**Device:** ${ticket.deviceModel}\n**Customer:** ${ticket.customerName} (${ticket.customerPhone || 'N/A'})`,
+          color: 0x10b981,
+          fields: [
+            { name: 'Status', value: ticket.status, inline: true },
+            { name: 'Total (ZAR)', value: formatZAR(fin.total), inline: true },
+            { name: 'Balance Due', value: formatZAR(fin.balance), inline: true }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      };
+      try {
+        await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      } catch (e) {}
+    }
+
+    async function sendTestDiscordWebhook() {
+      const url = (document.getElementById('set-webhook-url')?.value || state.settings.webhookUrl || '').trim();
+      if (!url) return;
+      state.settings.webhookUrl = url;
+      saveState(true);
+      await sendDiscordTicketEmbed({ id: 'RPR-TEST', deviceModel: 'Test Device', customerName: 'Test Client', customerPhone: '0820000000', status: 'Received', items: [] }, 'TEST');
+      showToast('Discord Test Sent', 'Webhook embed delivered successfully.', 'success');
+    }
+
+    // ==================== BACKUP & RESTORE ====================
+    function exportBackupJSON() {
+      const blob = new Blob([JSON.stringify(buildSyncPayload(), null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `RepairDesk_ZAR_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Backup Exported', 'JSON snapshot saved.', 'success');
+    }
+
+    function importBackupJSON(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (Array.isArray(parsed.tickets)) state.tickets = parsed.tickets;
+          if (Array.isArray(parsed.assets)) state.assets = parsed.assets;
+          if (Array.isArray(parsed.inventory)) state.inventory = parsed.inventory;
+          if (Array.isArray(parsed.categories)) state.categories = parsed.categories;
+          if (Array.isArray(parsed.servicePresets)) state.servicePresets = parsed.servicePresets;
+          if (parsed.publicSettings) state.settings = { ...state.settings, ...parsed.publicSettings };
+          saveState();
+          refreshAllUI();
+          showToast('Restored!', 'All data imported successfully.', 'success');
+        } catch (err) {
+          showToast('Import Error', 'Invalid backup file.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function exportTicketsCSV() {
+      const headers = ['TicketID', 'Customer', 'Phone', 'Device', 'Status', 'TotalZAR', 'BalanceZAR'];
+      const rows = state.tickets.map(t => {
+        const fin = getTicketFinancials(t);
+        return [t.id, t.customerName, t.customerPhone, t.deviceModel, t.status, fin.total.toFixed(2), fin.balance.toFixed(2)]
+          .map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',');
+      });
+      const blob = new Blob([[headers.join(','), ...rows].join('\n')], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `RepairDesk_Tickets_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ==================== RENDERING ALL VIEWS ====================
+    function refreshAllUI() {
+      document.getElementById('sidebar-shop-name').textContent = state.settings.shopName || 'RepairDesk ZAR';
+      document.getElementById('nav-ticket-count').textContent = state.tickets.length;
+      document.getElementById('nav-asset-count').textContent = state.assets.length;
+      document.getElementById('nav-customer-count').textContent = new Set(state.tickets.map(t => t.customerPhone || t.customerName)).size;
+
+      const lowStockCount = state.inventory.filter(p => p.qty <= (p.minQty || 2)).length;
+      const lowStockBadge = document.getElementById('nav-low-stock-badge');
+      if (lowStockBadge) {
+        lowStockBadge.classList.toggle('hidden', lowStockCount === 0);
+        lowStockBadge.textContent = `${lowStockCount} low`;
+      }
+
+      populateAllDropdowns();
+      renderDashboard();
+      renderTicketsList();
+      renderInventoryList();
+      renderCustomersList();
+      renderAssetsList();
+      renderPaymentsTable();
+      populateSettingsForm();
+    }
+
+    function renderDashboard() {
+      let activeCount = 0;
+      let overdueCount = 0;
+      let totalBilled = 0;
+      let totalPaid = 0;
+
+      state.tickets.forEach(t => {
+        if (t.status !== 'Collected') {
+          activeCount += 1;
+          if (t.dueDate && new Date(t.dueDate) < new Date()) overdueCount += 1;
+        }
+        const fin = getTicketFinancials(t);
+        totalBilled += fin.total;
+        totalPaid += fin.paid;
+      });
+
+      document.getElementById('kpi-active-tickets').textContent = activeCount;
+      document.getElementById('kpi-sla-overdue').textContent = overdueCount > 0 ? `⚠️ ${overdueCount} SLA Overdue` : '';
+      document.getElementById('kpi-total-billed').textContent = formatZAR(totalBilled);
+      document.getElementById('kpi-total-paid').textContent = formatZAR(totalPaid);
+      document.getElementById('kpi-parts-count').textContent = state.inventory.length;
+      const lowStockCount = state.inventory.filter(p => p.qty <= (p.minQty || 2)).length;
+      document.getElementById('kpi-low-stock-alert').textContent = lowStockCount > 0 ? `⚠️ ${lowStockCount} low stock` : '';
+
+      // Recent tickets
+      const recentEl = document.getElementById('dashboard-recent-tickets');
+      recentEl.innerHTML = state.tickets.slice(0, 5).map(t => `
+        <div onclick="openTicketDetailModal('${escapeHTML(t.id)}')" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 flex items-center justify-between cursor-pointer text-xs">
+          <div>
+            <span class="font-mono font-bold text-emerald-500">${escapeHTML(t.id)}</span> — <strong>${escapeHTML(t.deviceModel)}</strong> (${escapeHTML(t.customerName)})
+          </div>
+          <span class="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 font-bold">${escapeHTML(t.status)}</span>
+        </div>
+      `).join('') || '<div class="text-xs text-slate-400 py-4 text-center">No tickets yet.</div>';
+
+      // Low stock alerts
+      const lowEl = document.getElementById('dashboard-low-stock-list');
+      const lowItems = state.inventory.filter(p => p.qty <= (p.minQty || 2));
+      lowEl.innerHTML = lowItems.map(p => `
+        <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-between text-xs">
+          <div><strong>${escapeHTML(p.name)}</strong> (Qty: ${p.qty})</div>
+          ${p.buyLink ? `<a href="${escapeHTML(p.buyLink)}" target="_blank" class="text-rose-500 font-bold underline">Buy</a>` : ''}
+        </div>
+      `).join('') || '<div class="text-xs text-slate-400 py-4 text-center">All parts fully stocked!</div>';
+    }
+
+    function renderTicketsList() {
+      const container = document.getElementById('tickets-list-container');
+      if (!container) return;
+      const q = (document.getElementById('ticket-search-filter')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('ticket-status-filter')?.value || 'ALL';
+      const catFilter = document.getElementById('ticket-category-filter')?.value ?? 'ALL';
+
+      const filtered = state.tickets.filter(t => {
+        if (statusFilter !== 'ALL' && t.status !== statusFilter) return false;
+        if (catFilter !== 'ALL' && (t.category || '') !== catFilter) return false;
+        if (!q) return true;
+        return [t.id, t.customerName, t.customerPhone, t.deviceModel, t.assetTag].some(f => (f || '').toLowerCase().includes(q));
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="md:col-span-2 p-8 rounded-2xl bg-white dark:bg-slate-900 border text-center text-xs text-slate-400">No repair tickets found.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(t => {
+        const fin = getTicketFinancials(t);
+        const isOverdue = t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'Collected';
+        return `
+          <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-3">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-mono text-xs font-bold">${escapeHTML(t.id)}</span>
+                <h3 class="font-bold text-base mt-1">${escapeHTML(t.deviceModel)}</h3>
+                <div class="text-xs text-slate-500">${escapeHTML(t.customerName)} • ${escapeHTML(t.customerPhone || '')}</div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800">${escapeHTML(t.status)}</span>
+            </div>
+            ${t.dueDate ? `<div class="text-[11px] font-mono ${isOverdue ? 'text-rose-500 font-bold' : 'text-slate-400'}">SLA Target: ${escapeHTML(t.dueDate)} ${isOverdue ? '⚠️ Overdue' : ''}</div>` : ''}
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+              <span class="font-mono font-bold">${formatZAR(fin.total)}</span>
+              <button onclick="openTicketDetailModal('${escapeHTML(t.id)}')" class="px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold">Open</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAssetsList() {
+      const container = document.getElementById('assets-list-container');
+      if (!container) return;
+      const q = (document.getElementById('asset-search-filter')?.value || '').toLowerCase().trim();
+      const catFilter = document.getElementById('asset-category-filter')?.value ?? 'ALL';
+
+      const filtered = state.assets.filter(a => {
+        if (catFilter !== 'ALL' && (a.category || '') !== catFilter) return false;
+        if (!q) return true;
+        return [a.tag, a.name, a.owner, a.serial].some(f => (f || '').toLowerCase().includes(q));
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="md:col-span-3 text-center text-xs text-slate-400 py-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">No asset tags found.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(a => {
+        const canvasId = 'barcode-canvas-' + Math.random().toString(36).substring(2, 9);
+        setTimeout(() => {
+          try {
+            JsBarcode('#' + canvasId, a.tag, { format: 'CODE128', width: 2, height: 50, displayValue: true, fontSize: 13, fontOptions: 'bold' });
+          } catch (e) {}
+        }, 50);
+
+        return `
+          <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4 flex flex-col justify-between shadow-xs">
+            <div class="space-y-1.5">
+              <div class="flex items-start justify-between">
+                <div>
+                  <span class="px-2.5 py-0.5 rounded bg-sky-500/15 text-sky-500 font-mono text-xs font-bold">${escapeHTML(a.tag)}</span>
+                  <h3 class="font-display font-extrabold text-base mt-1.5">${escapeHTML(a.name)}</h3>
+                </div>
+                ${a.category ? `<span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-semibold text-slate-500">${escapeHTML(a.category)}</span>` : ''}
+              </div>
+              <div class="text-xs text-slate-500 dark:text-slate-400">Owner: <strong class="text-slate-800 dark:text-slate-200">${escapeHTML(a.owner || 'Workshop')}</strong> ${a.serial ? '• Serial: <span class="font-mono">' + escapeHTML(a.serial) + '</span>' : ''}</div>
+            </div>
+
+            <!-- Crisp Scannable PNG Barcode Display Card -->
+            <div class="p-3 rounded-xl bg-white border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center overflow-hidden shadow-xs">
+              <svg id="${canvasId}" class="max-w-full h-auto"></svg>
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+              <button onclick="startNewTicket('${escapeHTML(a.tag)}')" class="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
+                + Create Repair Ticket
+              </button>
+              <button onclick="openStickerModal('${escapeHTML(a.tag)}', '${escapeHTML(a.name).replace(/'/g, "\\'")}', '${escapeHTML(a.owner || '').replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold transition">
+                🏷️ Print Sticker
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPaymentsTable() {
+      const tbody = document.getElementById('payments-table-body');
+      if (!tbody) return;
+      const payments = [];
+      state.tickets.forEach(t => (t.payments || []).forEach(p => payments.push({ ...p, ticketId: t.id, customer: t.customerName })));
+      payments.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      tbody.innerHTML = payments.map(p => `
+        <tr>
+          <td class="py-3 px-3">${new Date(p.date).toLocaleDateString('en-ZA')}</td>
+          <td class="py-3 px-3 font-mono font-bold text-emerald-500">${escapeHTML(p.ticketId)}</td>
+          <td class="py-3 px-3">${escapeHTML(p.customer)}</td>
+          <td class="py-3 px-3">${escapeHTML(p.method)}</td>
+          <td class="py-3 px-3 text-slate-400">${escapeHTML(p.note || '')}</td>
+          <td class="py-3 px-3 text-right font-mono font-bold text-emerald-500">${formatZAR(p.amount)}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" class="py-4 text-center text-slate-400">No payments recorded.</td></tr>';
+    }
+
+    function populateAllDropdowns() {
+      const quickBar = document.getElementById('service-presets-quick-bar');
+      if (quickBar) {
+        quickBar.innerHTML = state.servicePresets.map(p => `
+          <button type="button" onclick="addLineItemRow('${escapeHTML(p.name).replace(/'/g, "\\'")}', 1, ${p.price})" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600/20 text-xs font-semibold">
+            + ${escapeHTML(p.name)} (${formatZAR(p.price)})
+          </button>
+        `).join('');
+      }
+
+      const presetsList = document.getElementById('service-presets-list');
+      if (presetsList) {
+        presetsList.innerHTML = state.servicePresets.map((p, idx) => `
+          <div class="flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs">
+            <span><strong>${escapeHTML(p.name)}</strong> — ${formatZAR(p.price)}</span>
+            <button type="button" onclick="deleteServicePreset(${idx})" class="text-rose-500 font-bold hover:underline">Remove</button>
+          </div>
+        `).join('');
+      }
+
+      const catSelects = ['nt-category', 'asset-category-input', 'modal-ticket-category-select', 'ticket-category-filter', 'asset-category-filter'];
+      catSelects.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const prev = el.value;
+        const isFilter = id.includes('filter');
+        el.innerHTML = (isFilter ? '<option value="ALL">All Categories</option>' : '') +
+          '<option value="">Uncategorized</option>' +
+          state.categories.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('');
+        if ([...el.options].some(o => o.value === prev)) el.value = prev;
+      });
+
+      const catList = document.getElementById('settings-categories-list');
+      if (catList) {
+        catList.innerHTML = state.categories.map(c => `
+          <div class="flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs">
+            <span>🗂️ ${escapeHTML(c)}</span>
+            <button type="button" onclick="deleteCustomCategory('${escapeHTML(c).replace(/'/g, "\\'")}')" class="text-rose-500 font-bold hover:underline">Remove</button>
+          </div>
+        `).join('') || '<div class="text-xs text-slate-400">No custom categories.</div>';
+      }
+    }
+
+    function populateSettingsForm() {
+      const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val ?? ''; };
+      setVal('set-shop-name', state.settings.shopName);
+      setVal('set-shop-phone', state.settings.shopPhone);
+      setVal('set-shop-address', state.settings.shopAddress);
+      setVal('set-shop-terms', state.settings.shopTerms);
+      setVal('set-webhook-url', state.settings.webhookUrl);
+      setVal('set-gist-id', state.settings.gistId);
+      setVal('set-github-token', state.settings.githubToken);
+    }
+
+    function handleSaveSettings(event) {
+      if (event) event.preventDefault();
+      state.settings.shopName = document.getElementById('set-shop-name')?.value.trim() || 'RepairDesk ZAR';
+      state.settings.shopPhone = document.getElementById('set-shop-phone')?.value.trim() || '';
+      state.settings.shopAddress = document.getElementById('set-shop-address')?.value.trim() || '';
+      state.settings.shopTerms = document.getElementById('set-shop-terms')?.value.trim() || '';
+      state.settings.webhookUrl = document.getElementById('set-webhook-url')?.value.trim() || '';
+      state.settings.gistId = document.getElementById('set-gist-id')?.value.trim() || '';
+      state.settings.githubToken = document.getElementById('set-github-token')?.value.trim() || '';
+      saveState();
+      refreshAllUI();
+      showToast('Settings Saved', 'Workshop profile updated.', 'success');
+    }
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', async () => {
+      loadState();
+      const urlParams = new URLSearchParams(window.location.search);
+      const portalParam = urlParams.get('portal');
+      const syncParam = urlParams.get('sync');
+
+      if (syncParam) {
+        state.settings.gistId = syncParam.trim();
+        saveState(true);
+        await pullFromCloudGist(true);
+      }
+
+      if (portalParam) {
+        openCustomerPortalForTicket(portalParam);
+      }
+
+      resetNewTicketForm();
+      regenerateAssetTagInput();
+      switchView('dashboard');
+    });
+  </script>
+</body>
+</html>
