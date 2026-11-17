@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="af">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rekeningkunde Graad 9: Oefentoets</title>
+<style>
+:root{--bg:#EDF2F6;--ink:#14213D;--card:#fff;--line:#C9D6E2;--ok:#0F766E;--okbg:#D5F0EB;--bad:#B42318;--badbg:#FBE1DD;--acc:#14213D;--acct:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0F1722;--ink:#E6EDF5;--card:#17212F;--line:#2A3A4F;--ok:#4FD8BC;--okbg:#12342F;--bad:#FF9A8B;--badbg:#3A1E1B;--acc:#E6EDF5;--acct:#0F1722}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0F1722;--ink:#E6EDF5;--card:#17212F;--line:#2A3A4F;--ok:#4FD8BC;--okbg:#12342F;--bad:#FF9A8B;--badbg:#3A1E1B;--acc:#E6EDF5;--acct:#0F1722}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+main{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:22px;margin:0 0 4px;line-height:1.25}
+.sub{margin:0 0 20px;opacity:.75;font-size:15px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:14px;opacity:.8;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.sec{font-size:14px;opacity:.7;margin:0 0 8px}
+.q{font-size:19px;font-weight:650;margin:0 0 16px;line-height:1.4}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;color:inherit;background:transparent;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;cursor:pointer}
+.opt b{min-width:20px}
+.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--ok);outline-offset:2px}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.bad{border-color:var(--bad);background:var(--badbg)}
+.opt:disabled{cursor:default;opacity:1}
+.fb{min-height:24px;margin:4px 0 12px;font-weight:600}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}
+.btn{display:block;width:100%;font:inherit;font-weight:650;background:var(--acc);color:var(--acct);border:0;border-radius:10px;padding:14px;cursor:pointer}
+.score{font-size:48px;font-weight:750;margin:4px 0}
+.rev{border-top:1px solid var(--line);padding:12px 0}
+.rev p{margin:0 0 4px}.rev .a{color:var(--ok);font-weight:600}.rev .w{color:var(--bad)}
+.hide{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>Rekeningkunde Graad 9</h1>
+<p class="sub">Oefentoets: multikeuse</p>
+<div id="quiz">
+<div class="bar"><i id="pb"></i></div>
+<div class="meta"><span id="cnt"></span><span id="sc"></span></div>
+<div class="card">
+<p class="sec" id="sec"></p>
+<p class="q" id="q"></p>
+<div id="opts"></div>
+<div class="fb" id="fb" aria-live="polite"></div>
+<button class="btn hide" id="next"></button>
+</div>
+</div>
+<div id="end" class="card hide">
+<p class="sec">Jou telling</p>
+<div class="score" id="fs"></div>
+<p id="msg"></p>
+<div id="rev"></div>
+<button class="btn" id="again">Probeer weer</button>
+</div>
+</main>
+<script>
+// [afdeling, vraag, [korrekte antwoord, fout, fout, fout]]
+var D=[
+["Teorie","Wat is die eerste stap in die rekeningkundige siklus?",["Brondokumente","Proefbalans","Algemene grootboek","Joernale"]],
+["Teorie","Watter formule is die korrekte rekeningkundige vergelyking?",["Bates = Eienaarsbelang + Laste","Bates = Laste − Eienaarsbelang","Eienaarsbelang = Bates + Laste","Laste = Bates + Eienaarsbelang"]],
+["Teorie","’n Besigheid het bates van R50 000 en laste van R20 000. Wat is die eienaarsbelang?",["R30 000","R70 000","R20 000","R50 000"]],
+["Brondokumente","Watter brondokument word uitgereik wanneer ’n besigheid kontant van ’n kliënt ontvang?",["Kwitansie","Faktuur","Kredietnota","Depositoslip"]],
+["Brondokumente","’n Kliënt gee goedere terug aan die besigheid. Watter brondokument word uitgereik?",["Kredietnota","Kwitansie","Kasregisterrol","Tjek"]],
+["Rekeningkundige vergelyking","Die besigheid koop toerusting op krediet. Wat is die effek op die vergelyking?",["Bates neem toe, laste neem toe","Bates neem toe, eienaarsbelang neem toe","Bates neem af, laste neem toe","Laste neem af, bates neem af"]],
+["Rekeningkundige vergelyking","Die eienaar trek R500 kontant uit die besigheid. Wat is die effek?",["Bank neem af, eienaarsbelang neem af","Bank neem toe, eienaarsbelang neem toe","Bank neem af, laste neem toe","Bank neem toe, laste neem af"]],
+["Rekeningkundige vergelyking","Die besigheid betaal R3 000 kontant vir salarisse. Wat is die effek?",["Bates neem af, eienaarsbelang neem af","Bates neem toe, eienaarsbelang neem af","Bates neem af, laste neem af","Bates neem toe, eienaarsbelang neem toe"]],
+["Rekeningkundige vergelyking","Die eienaar stort R10 000 in die besigheid se bankrekening. Wat is die effek?",["Bank neem toe, eienaarsbelang neem toe","Bank neem toe, laste neem toe","Bank neem af, eienaarsbelang neem af","Bank neem toe, eienaarsbelang neem af"]],
+["Joernale","In watter joernaal word kredietverkope aangeteken?",["DJ","KOJ","KJ","KBJ"]],
+["Joernale","In watter joernaal word kredietaankope aangeteken?",["KJ","DJ","KKJ","KOJ"]],
+["Joernale","Waarvoor word die KKJ gebruik?",["Klein uitgawes wat uit kleinkas betaal word","Kontant wat ontvang word","Kontant wat via die bank betaal word","Kredietverkope"]],
+["Joernale","In watter joernaal word alle kontant aangeteken wat deur die besigheid ontvang word?",["KOJ","KBJ","KKJ","DJ"]],
+["Algemene grootboek","Watter een is NIE een van die groot 5 rekeningkundige elemente nie?",["Joernale","Bates","Laste","Inkomste"]],
+["Algemene grootboek","Watter rekening is ’n bate?",["Bank","Krediteure","Salarisse","Verkope"]],
+["Algemene grootboek","Watter rekening is ’n las?",["Krediteure","Debiteure","Toerusting","Verkope"]],
+["Algemene grootboek","Salarisse is ’n …",["uitgawe","bate","las","inkomste"]],
+["Algemene grootboek","Rente wat ontvang word, is ’n …",["inkomste","uitgawe","bate","las"]],
+["Proefbalans","Wat is die doel van ’n proefbalans?",["Om te kontroleer dat die debietsaldo’s en kredietsaldo’s gelyk is","Om die wins te bereken","Om brondokumente uit te reik","Om joernale aan te teken"]],
+["Proefbalans","Watter soort saldo het ’n bate-rekening normaalweg?",["Debietsaldo","Kredietsaldo","Geen saldo","Altyd R0"]],
+["Teorie","Wie is debiteure?",["Persone wat geld aan die besigheid skuld","Persone aan wie die besigheid geld skuld","Die eienaars van die besigheid","Die werknemers van die besigheid"]],
+["Teorie","Wie is krediteure?",["Persone aan wie die besigheid geld skuld","Persone wat geld aan die besigheid skuld","Kliënte wat kontant betaal","Die bank"]],
+["Teorie","Watter volgorde van die rekeningkundige siklus is korrek?",["Brondokumente, joernale, grootboek, proefbalans","Joernale, brondokumente, proefbalans, grootboek","Grootboek, joernale, brondokumente, proefbalans","Proefbalans, grootboek, joernale, brondokumente"]],
+["Brondokumente","Watter brondokument word uitgereik wanneer goedere op krediet verkoop word?",["Faktuur","Kwitansie","Depositoslip","Kasregisterrol"]],
+["Brondokumente","Waarvoor word ’n depositoslip gebruik?",["Om geld in die bank te deponeer","Om goedere terug te gee","Om ’n kredietverkoop aan te teken","Om ’n tjek te kanselleer"]],
+["Brondokumente","Watter brondokument bewys ’n kontantverkoop by ’n kasregister?",["Kasregisterrol","Kredietnota","Faktuur","Tjekteenblad"]],
+["Brondokumente","Watter brondokument word gebruik wanneer die besigheid met ’n tjek betaal?",["Tjekteenblad","Kwitansie","Kasregisterrol","Faktuur"]],
+["Rekeningkundige vergelyking","Die besigheid verkoop goedere vir R2 000 kontant en die geld gaan in die bank. Wat is die effek?",["Bank neem toe, eienaarsbelang neem toe","Bank neem af, eienaarsbelang neem af","Bank neem toe, laste neem toe","Laste neem af, bank neem af"]],
+["Rekeningkundige vergelyking","Die besigheid betaal R1 000 aan ’n krediteur uit die bank. Wat is die effek?",["Bank neem af, laste neem af","Bank neem af, eienaarsbelang neem af","Bank neem toe, laste neem af","Bank neem toe, laste neem toe"]],
+["Rekeningkundige vergelyking","Die besigheid het laste van R15 000 en eienaarsbelang van R40 000. Hoeveel is die bates?",["R55 000","R25 000","R40 000","R15 000"]],
+["Joernale","In watter joernaal word kontantbetalings via die bank aangeteken?",["KBJ","KOJ","KKJ","DJ"]],
+["Joernale","Waarvoor staan DJ?",["Debiteurejoernaal","Depositojoernaal","Dagjoernaal","Direkte joernaal"]],
+["Joernale","Waarvoor staan KJ?",["Krediteurejoernaal","Kontantjoernaal","Kleinkasjoernaal","Kredietnotajoernaal"]],
+["Joernale","Die besigheid verkoop goedere kontant. In watter joernaal word dit aangeteken?",["KOJ","DJ","KJ","KKJ"]],
+["Joernale","Die besigheid betaal die elektrisiteitsrekening met ’n tjek. In watter joernaal word dit aangeteken?",["KBJ","KOJ","DJ","KJ"]],
+["Algemene grootboek","Aan watter kant van ’n T-rekening is die debietkant?",["Links","Regs","Bo","Onder"]],
+["Algemene grootboek","Watter rekening is ’n uitgawe?",["Elektrisiteit","Bank","Krediteure","Verkope"]],
+["Algemene grootboek","Toerusting is ’n …",["bate","las","inkomste","uitgawe"]],
+["Proefbalans","Die totale van die debietkolom en kredietkolom in die proefbalans is nie gelyk nie. Wat beteken dit?",["Daar is ’n fout êrens in die rekords","Die besigheid het wins gemaak","Die besigheid het verlies gemaak","Alles is korrek"]],
+["Proefbalans","Watter rekening het normaalweg ’n kredietsaldo?",["Krediteure","Bank","Toerusting","Salarisse"]]
+];
+var S=["Teorie","Brondokumente","Rekeningkundige vergelyking","Joernale","Algemene grootboek","Proefbalans"];
+var L="ABCD",i,score,wrong,Q;
+function $(x){return document.getElementById(x)}
+function shuf(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1)),t=a[k];a[k]=a[j];a[j]=t}return a}
+function start(){i=0;score=0;wrong=[];Q=D.slice().sort(function(a,b){return S.indexOf(a[0])-S.indexOf(b[0])}).map(function(d){return{s:d[0],q:d[1],c:d[2][0],o:shuf(d[2])}});$("quiz").classList.remove("hide");$("end").classList.add("hide");show()}
+function show(){
+var d=Q[i];
+$("cnt").textContent="Vraag "+(i+1)+" van "+Q.length;
+$("sc").textContent="Punte: "+score;
+$("pb").style.width=(i/Q.length*100)+"%";
+$("sec").textContent=d.s;
+$("q").textContent=d.q;
+$("fb").textContent="";$("fb").className="fb";
+$("next").classList.add("hide");
+var box=$("opts");box.innerHTML="";
+d.o.forEach(function(t,k){
+var b=document.createElement("button");b.className="opt";
+b.innerHTML="<b>"+L[k]+".</b><span></span>";b.lastChild.textContent=t;
+b.onclick=function(){pick(b,t)};box.appendChild(b)})}
+function pick(b,t){
+var d=Q[i],ok=t===d.c;
+[].forEach.call($("opts").children,function(x){x.disabled=true;if(x.lastChild.textContent===d.c)x.classList.add("ok")});
+if(ok){score++;$("fb").textContent="Reg!";$("fb").className="fb ok"}
+else{b.classList.add("bad");wrong.push({q:d.q,a:d.c,y:t});$("fb").textContent="Nie reg nie. Die korrekte antwoord is gemerk.";$("fb").className="fb bad"}
+$("sc").textContent="Punte: "+score;
+var n=$("next");n.textContent=i<Q.length-1?"Volgende vraag":"Sien my telling";n.classList.remove("hide")}
+$("next").onclick=function(){i++;if(i<Q.length)show();else finish()};
+function finish(){
+$("quiz").classList.add("hide");$("end").classList.remove("hide");
+var p=Math.round(score/Q.length*100);
+$("fs").textContent=score+" / "+Q.length+" ("+p+"%)";
+$("msg").textContent=p>=80?"Baie goed! Jy is gereed.":p>=50?"Goeie poging. Kyk na die foute hieronder en probeer weer.":"Bly aan oefen. Gaan deur jou teorie en probeer weer.";
+var r=$("rev");r.innerHTML="";
+wrong.forEach(function(w){
+var e=document.createElement("div");e.className="rev";
+var a=document.createElement("p");a.textContent=w.q;
+var b=document.createElement("p");b.className="w";b.textContent="Jou antwoord: "+w.y;
+var c=document.createElement("p");c.className="a";c.textContent="Korrek: "+w.a;
+e.appendChild(a);e.appendChild(b);e.appendChild(c);r.appendChild(e)});
+window.scrollTo(0,0)}
+$("again").onclick=start;
+start();
+</script>
+</body>
+</html>
